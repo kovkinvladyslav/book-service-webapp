@@ -1,5 +1,35 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
-public class OrderServiceImpl{
-    //TODO Place your code here
+import java.util.List;
+
+import com.epam.rd.autocode.spring.project.mapper.OrderMapper;
+import com.epam.rd.autocode.spring.project.model.Order;
+import org.springframework.stereotype.Service;
+
+import com.epam.rd.autocode.spring.project.dto.OrderDTO;
+import com.epam.rd.autocode.spring.project.repo.OrderRepository;
+import com.epam.rd.autocode.spring.project.service.OrderService;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class OrderServiceImpl implements OrderService{
+    final private OrderRepository orderRepository;
+    final private OrderMapper orderMapper;
+    @Override
+    public List<OrderDTO> getOrdersByClient(String clientEmail) {
+        return orderMapper.toDtoList(orderRepository.findByClientEmail(clientEmail));
+    }
+
+    @Override
+    public List<OrderDTO> getOrdersByEmployee(String employeeEmail) {
+        return orderMapper.toDtoList(orderRepository.findByEmployeeEmail(employeeEmail));
+    }
+
+    @Override
+    public OrderDTO addOrder(OrderDTO orderDTO) {
+        Order order = orderMapper.toEntity(orderDTO);
+        return orderMapper.toDto(orderRepository.save(order));
+    }
 }

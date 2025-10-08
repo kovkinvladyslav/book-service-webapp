@@ -4,10 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AlreadyExistExceptionTest {
     private static Class<?> aClass;
@@ -18,9 +15,9 @@ public class AlreadyExistExceptionTest {
     }
 
     @Test
-    @DisplayName("AlreadyExistException extends RuntimeException")
+    @DisplayName("NotFoundException extends RuntimeException")
     void testExtends(){
         assertEquals(RuntimeException.class, aClass.getSuperclass(),
-                "AlreadyExistException should extends RuntimeException");
+                "NotFoundException should extends RuntimeException");
     }
 }
