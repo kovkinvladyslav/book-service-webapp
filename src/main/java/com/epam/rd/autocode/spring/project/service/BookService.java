@@ -15,4 +15,6 @@ public interface BookService {
     void deleteBookByName(String name);
 
     BookDTO addBook(BookDTO book);
+
+    String getImageUrlByName(String bookName);
 }

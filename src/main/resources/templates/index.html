@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BookStore</title>
+</head>
+<body>
+<header>
+    <h1>BookStore</h1>
+</header>
+
+<main>
+    <h2>Welcome!</h2>
+    <p>Manage and explore books easily.</p>
+    <div>
+        <a th:href="@{/books}" class="btn">View Books</a>
+        <a th:href="@{/books/add}" class="btn">Add New Book</a>
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
 import com.epam.rd.autocode.spring.project.dto.ClientDTO;
+import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.mapper.ClientMapper;
 import com.epam.rd.autocode.spring.project.model.Client;
@@ -12,44 +13,52 @@ import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
-    private final AbstractCrudService<Client, ClientDTO, String> crudService;
+
+    private final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
 
     private static final String CLIENT_NOT_FOUND = "Client not found with email: ";
     private static final String CLIENT_ALREADY_EXISTS = "Client already exists: ";
 
     public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper) {
-        this.crudService = new AbstractCrudService<>(
-                clientRepository,
-                clientMapper,
-                email -> clientRepository.findByEmail(email)
-                        .orElseThrow(() -> new NotFoundException(CLIENT_NOT_FOUND + email)),
-                dto -> clientRepository.findByEmail(dto.getEmail()).isPresent(),
-                dto -> CLIENT_ALREADY_EXISTS + dto.getEmail()
-        );
+        this.clientRepository = clientRepository;
+        this.clientMapper = clientMapper;
     }
 
     @Override
     public List<ClientDTO> getAllClients() {
-        return crudService.getAll();
+        return clientMapper.toDtoList(clientRepository.findAll());
     }
 
     @Override
     public ClientDTO getClientByEmail(String email) {
-        return crudService.getByBusinessKey(email);
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(CLIENT_NOT_FOUND + email));
+        return clientMapper.toDto(client);
     }
 
     @Override
-    public ClientDTO updateClientByEmail(String email, ClientDTO client) {
-        return crudService.update(email, client);
+    public ClientDTO addClient(ClientDTO dto) {
+        if (clientRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new AlreadyExistException(CLIENT_ALREADY_EXISTS + dto.getEmail());
+        }
+        Client client = clientMapper.toEntity(dto);
+        return clientMapper.toDto(clientRepository.save(client));
+    }
+
+    @Override
+    public ClientDTO updateClientByEmail(String email, ClientDTO dto) {
+        Client existing = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(CLIENT_NOT_FOUND + email));
+
+        clientMapper.updateEntity(dto, existing);
+        return clientMapper.toDto(clientRepository.save(existing));
     }
 
     @Override
     public void deleteClientByEmail(String email) {
-        crudService.delete(email);
-    }
-
-    @Override
-    public ClientDTO addClient(ClientDTO client) {
-        return crudService.add(client);
+        Client existing = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(CLIENT_NOT_FOUND + email));
+        clientRepository.delete(existing);
     }
 }

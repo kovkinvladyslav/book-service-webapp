@@ -1,6 +1,7 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
 import com.epam.rd.autocode.spring.project.dto.BookDTO;
+import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.mapper.BookMapper;
 import com.epam.rd.autocode.spring.project.model.Book;
@@ -12,44 +13,59 @@ import java.util.List;
 
 @Service
 public class BookServiceImpl implements BookService {
-    private final AbstractCrudService<Book, BookDTO, String> crudService;
+
+    private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     private static final String BOOK_NOT_FOUND = "Book not found with name: ";
     private static final String BOOK_ALREADY_EXISTS = "Book already exists: ";
 
     public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper) {
-        this.crudService = new AbstractCrudService<>(
-                bookRepository,
-                bookMapper,
-                name -> bookRepository.findByName(name)
-                        .orElseThrow(() -> new NotFoundException(BOOK_NOT_FOUND + name)),
-                dto -> bookRepository.findByName(dto.getName()).isPresent(),
-                dto -> BOOK_ALREADY_EXISTS + dto.getName()
-        );
+        this.bookRepository = bookRepository;
+        this.bookMapper = bookMapper;
     }
 
     @Override
     public List<BookDTO> getAllBooks() {
-        return crudService.getAll();
+        return bookMapper.toDtoList(bookRepository.findAll());
     }
 
     @Override
     public BookDTO getBookByName(String name) {
-        return crudService.getByBusinessKey(name);
+        Book book = bookRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException(BOOK_NOT_FOUND + name));
+        return bookMapper.toDto(book);
     }
 
     @Override
-    public BookDTO updateBookByName(String name, BookDTO book) {
-        return crudService.update(name, book);
+    public BookDTO addBook(BookDTO dto) {
+        if (bookRepository.findByName(dto.getName()).isPresent()) {
+            throw new AlreadyExistException(BOOK_ALREADY_EXISTS + dto.getName());
+        }
+        Book book = bookMapper.toEntity(dto);
+        return bookMapper.toDto(bookRepository.save(book));
+    }
+
+    @Override
+    public BookDTO updateBookByName(String name, BookDTO dto) {
+        Book existing = bookRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException(BOOK_NOT_FOUND + name));
+
+        bookMapper.updateEntity(dto, existing);
+        return bookMapper.toDto(bookRepository.save(existing));
     }
 
     @Override
     public void deleteBookByName(String name) {
-        crudService.delete(name);
+        Book existing = bookRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException(BOOK_NOT_FOUND + name));
+        bookRepository.delete(existing);
     }
 
     @Override
-    public BookDTO addBook(BookDTO book) {
-        return crudService.add(book);
+    public String getImageUrlByName(String bookName) {
+        return bookRepository.findByName(bookName)
+                .map(b -> b.getImage().getUrl())
+                .orElseThrow(() -> new NotFoundException("image not found for " + bookName));
     }
 }

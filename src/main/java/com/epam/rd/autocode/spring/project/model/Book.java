@@ -6,14 +6,7 @@ import java.time.LocalDate;
 import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import com.epam.rd.autocode.spring.project.model.enums.Language;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +14,6 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "books")
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public class Book {
@@ -43,4 +34,8 @@ public class Book {
     private String description;
     @Enumerated(EnumType.STRING)
     private Language language;
+    @ManyToOne
+    @JoinColumn(name = "image_id")   // має збігатись із твоїм SQL
+    private Image image;
+
 }

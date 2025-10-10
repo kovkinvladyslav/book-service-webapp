@@ -10,14 +10,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "clients")
-@NoArgsConstructor
 @Getter
 @Setter
 public class Client extends User {
     private BigDecimal balance;
-
-    public Client(Long id, String email, String password, String name, BigDecimal balance) {
-        super(id, email, password, name);
-        this.balance = balance;
-    }
 }

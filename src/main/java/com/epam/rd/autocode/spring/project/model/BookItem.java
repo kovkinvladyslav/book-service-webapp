@@ -13,8 +13,6 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "book_items")
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class BookItem {

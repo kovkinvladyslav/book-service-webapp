@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${book.name}">Book Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px auto;
+            max-width: 1000px;
+            background-color: #fafafa;
+            color: #111;
+        }
+
+        .book-page {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .book-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        .book-image img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-color: #eee;
+        }
+
+        .book-info {
+            flex: 2;
+            min-width: 280px;
+        }
+
+        .book-title {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .book-author {
+            font-size: 15px;
+            color: #007185;
+            margin-bottom: 12px;
+        }
+
+        .book-price {
+            font-size: 22px;
+            color: #b12704;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .book-description {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+
+        .details-table {
+            margin-top: 25px;
+            font-size: 14px;
+            border-collapse: collapse;
+        }
+
+        .details-table td {
+            padding: 5px 10px;
+            vertical-align: top;
+        }
+
+        .details-label {
+            font-weight: bold;
+            width: 160px;
+        }
+
+        a.back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #0073e6;
+            text-decoration: none;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="book-page">
+    <!-- Left column: image -->
+    <div class="book-image">
+        <img th:src="${bookImage}"
+             alt="Book cover">
+    </div>
+
+    <div class="book-info">
+        <div class="book-title" th:text="${book.name}"></div>
+        <div class="book-author" th:text="'by ' + ${book.author}"></div>
+        <div class="book-price">$<span th:text="${book.price}"></span></div>
+
+        <div class="book-description" th:text="${book.description}"></div>
+
+        <table class="details-table">
+            <tr><td class="details-label">Genre:</td><td th:text="${book.genre}"></td></tr>
+            <tr><td class="details-label">Language:</td><td th:text="${book.language}"></td></tr>
+            <tr><td class="details-label">Age group:</td><td th:text="${book.ageGroup}"></td></tr>
+            <tr><td class="details-label">Pages:</td><td th:text="${book.pages}"></td></tr>
+            <tr><td class="details-label">Publication date:</td><td th:text="${book.publicationDate}"></td></tr>
+            <tr><td class="details-label">Characteristics:</td><td th:text="${book.characteristics}"></td></tr>
+        </table>
+    </div>
+</div>
+
+<a th:href="@{/books}" class="back-link">← Back to catalog</a>
+
+</body>
+</html>
