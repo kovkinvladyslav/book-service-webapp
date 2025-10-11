@@ -19,4 +19,6 @@ public class GlobalExceptionHandler {
         model.addAttribute("errorMessage", notFoundException.getMessage());
         return "error/404.html";
     }
+
+
 }

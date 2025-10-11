@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="container">
+    <div class="card">
+        <h1>Create Account</h1>
+        <p class="subtitle">Register as a client to start ordering books</p>
+
+        <div class="info-text">
+            You will be registered as a <strong>Client</strong>
+        </div>
+
+        <!-- General error message -->
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <form th:action="@{/register}" method="post" th:object="${clientDTO}">
+
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" th:field="*{name}"
+                       placeholder="John Doe" required
+                       th:classappend="${#fields.hasErrors('name')} ? 'error' : ''">
+                <div th:if="${#fields.hasErrors('name')}" class="error-message">
+                    <span th:errors="*{name}"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" th:field="*{email}"
+                       placeholder="your@email.com" required
+                       th:classappend="${#fields.hasErrors('email')} ? 'error' : ''">
+                <div th:if="${#fields.hasErrors('email')}" class="error-message">
+                    <span th:errors="*{email}"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" th:field="*{password}"
+                       placeholder="Minimum 8 characters" required
+                       th:classappend="${#fields.hasErrors('password')} ? 'error' : ''">
+                <div th:if="${#fields.hasErrors('password')}" class="error-message">
+                    <span th:errors="*{password}"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+
+        <div class="divider"><span>or</span></div>
+
+        <div class="links">
+            <p>Already have an account? <a th:href="@{/login}">Login</a></p>
+            <p><a th:href="@{/}">← Back to home</a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="container">
+    <div class="card">
+        <h1>Welcome Back</h1>
+        <p class="subtitle">Login to your BookStore account</p>
+
+        <!-- Success message -->
+        <div th:if="${param.registered}" class="alert alert-success">
+            ✓ Registration successful! Please login.
+        </div>
+
+        <!-- Error message -->
+        <div th:if="${param.error}" class="alert alert-error">
+            ✗ Invalid email or password
+        </div>
+
+        <!-- Logout message -->
+        <div th:if="${param.logout}" class="alert alert-info">
+            ℹ You have been logged out
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">Email</label>
+                <input type="text" id="username" name="username"
+                       placeholder="your@email.com" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+
+        <div class="divider"><span>or</span></div>
+
+        <div class="links">
+            <p>Don't have an account? <a th:href="@{/register}">Register</a></p>
+            <p><a th:href="@{/}">← Back to home</a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
