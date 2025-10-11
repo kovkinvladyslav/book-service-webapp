@@ -2,8 +2,8 @@ package com.epam.rd.autocode.spring.project.service.impl;
 
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.model.enums.UserRole;
-import com.epam.rd.autocode.spring.project.repo.ClientRepository;
-import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
+import com.epam.rd.autocode.spring.project.repository.ClientRepository;
+import com.epam.rd.autocode.spring.project.repository.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.service.UserRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

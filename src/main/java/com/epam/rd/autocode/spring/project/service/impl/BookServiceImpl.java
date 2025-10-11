@@ -5,7 +5,7 @@ import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
 import com.epam.rd.autocode.spring.project.model.Book;
-import com.epam.rd.autocode.spring.project.repo.BookRepository;
+import com.epam.rd.autocode.spring.project.repository.BookRepository;
 import com.epam.rd.autocode.spring.project.service.BookService;
 import com.epam.rd.autocode.spring.project.specification.BookSpecification;
 import jakarta.transaction.Transactional;

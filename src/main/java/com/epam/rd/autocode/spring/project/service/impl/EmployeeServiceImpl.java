@@ -5,7 +5,7 @@ import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
 import com.epam.rd.autocode.spring.project.model.Employee;
-import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
+import com.epam.rd.autocode.spring.project.repository.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

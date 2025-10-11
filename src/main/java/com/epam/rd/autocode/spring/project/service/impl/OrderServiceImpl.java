@@ -7,7 +7,7 @@ import com.epam.rd.autocode.spring.project.model.Order;
 import org.springframework.stereotype.Service;
 
 import com.epam.rd.autocode.spring.project.dto.OrderDTO;
-import com.epam.rd.autocode.spring.project.repo.OrderRepository;
+import com.epam.rd.autocode.spring.project.repository.OrderRepository;
 import com.epam.rd.autocode.spring.project.service.OrderService;
 
 import lombok.RequiredArgsConstructor;

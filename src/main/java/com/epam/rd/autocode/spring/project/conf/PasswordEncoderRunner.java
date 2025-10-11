@@ -1,12 +1,11 @@
 package com.epam.rd.autocode.spring.project.conf;
 
 import com.epam.rd.autocode.spring.project.model.User;
-import com.epam.rd.autocode.spring.project.repo.ClientRepository;
-import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
+import com.epam.rd.autocode.spring.project.repository.ClientRepository;
+import com.epam.rd.autocode.spring.project.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -24,8 +23,6 @@ public class PasswordEncoderRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("=== Starting Password Encoding ===");
-
         encodePasswords(
                 clientRepository.findAll(),
                 clientRepository::save,
@@ -37,8 +34,6 @@ public class PasswordEncoderRunner implements CommandLineRunner {
                 employeeRepository::save,
                 "EMPLOYEE"
         );
-
-        log.info("=== Password Encoding Complete ===");
     }
 
     private <T extends User> void encodePasswords(
@@ -52,9 +47,6 @@ public class PasswordEncoderRunner implements CommandLineRunner {
                     String originalPassword = user.getPassword();
                     user.setPassword(passwordEncoder.encode(originalPassword));
                     saveFunction.accept(user);
-
-                    log.info("{} - Email: {}, Original Password: {}, Name: {}",
-                            userType, user.getEmail(), originalPassword, user.getName());
                 });
     }
 

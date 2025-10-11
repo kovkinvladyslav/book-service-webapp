@@ -1,4 +1,4 @@
-package com.epam.rd.autocode.spring.project.repo;
+package com.epam.rd.autocode.spring.project.repository;
 
 import com.epam.rd.autocode.spring.project.model.Client;
 import org.springframework.data.jpa.repository.JpaRepository;

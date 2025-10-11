@@ -1,4 +1,4 @@
-package com.epam.rd.autocode.spring.project.config;
+package com.epam.rd.autocode.spring.project.conf;
 
 import com.epam.rd.autocode.spring.project.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/login", "/register").anonymous()
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
 
                         .requestMatchers("/books").permitAll()
                         .requestMatchers("/books/{name}").permitAll()
@@ -40,9 +41,8 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true) // ⬅️ Після логіну → на головну
+                        .defaultSuccessUrl("/", true)
                         .failureUrl("/login?error=true")
-                        .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -50,6 +50,9 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .invalidateHttpSession(true)
                         .permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler((req, res, ex1) -> res.sendRedirect("/"))
                 )
                 .userDetailsService(userDetailsService);
 

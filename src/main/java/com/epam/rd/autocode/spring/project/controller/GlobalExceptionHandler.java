@@ -5,6 +5,7 @@ import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,5 +21,9 @@ public class GlobalExceptionHandler {
         return "error/404.html";
     }
 
+    @ExceptionHandler(HttpClientErrorException.Forbidden.class)
+    public String forbiddenPage(){
+        return "/";
+    }
 
 }
