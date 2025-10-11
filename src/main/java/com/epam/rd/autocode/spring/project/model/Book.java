@@ -7,9 +7,7 @@ import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import com.epam.rd.autocode.spring.project.model.enums.Language;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -17,8 +15,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Book {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String genre;
@@ -34,8 +32,4 @@ public class Book {
     private String description;
     @Enumerated(EnumType.STRING)
     private Language language;
-    @ManyToOne
-    @JoinColumn(name = "image_id")   // має збігатись із твоїм SQL
-    private Image image;
-
 }

@@ -3,27 +3,25 @@ package com.epam.rd.autocode.spring.project.service.impl;
 import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
-import com.epam.rd.autocode.spring.project.mapper.EmployeeMapper;
+import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
 import com.epam.rd.autocode.spring.project.model.Employee;
 import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.service.EmployeeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+@RequiredArgsConstructor
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final EmployeeMapper employeeMapper;
+    private final GenericMapper<Employee, EmployeeDTO> employeeMapper;
 
     private static final String EMPLOYEE_NOT_FOUND = "Employee not found with email: ";
     private static final String EMPLOYEE_ALREADY_EXISTS = "Employee already exists: ";
-
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
-        this.employeeRepository = employeeRepository;
-        this.employeeMapper = employeeMapper;
-    }
 
     @Override
     public List<EmployeeDTO> getAllEmployees() {

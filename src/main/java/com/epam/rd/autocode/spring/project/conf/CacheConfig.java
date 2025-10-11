@@ -1,9 +1,9 @@
 package com.epam.rd.autocode.spring.project.conf;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import({MapperConfig.class, CacheConfig.class})
-public class BaseConfig{
+@EnableCaching
+public class CacheConfig {
 }

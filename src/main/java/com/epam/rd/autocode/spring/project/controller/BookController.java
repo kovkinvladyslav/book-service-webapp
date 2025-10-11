@@ -1,63 +1,108 @@
 package com.epam.rd.autocode.spring.project.controller;
 
 import com.epam.rd.autocode.spring.project.dto.BookDTO;
+import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
+import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
+import com.epam.rd.autocode.spring.project.model.enums.Language;
 import com.epam.rd.autocode.spring.project.service.BookService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/books")
+@RequestMapping("books")
 public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public String listBooks(Model model) {
-        List<BookDTO> books = bookService.getAllBooks();
-
-        Map<String, String> bookImages = new HashMap<>();
-        for (BookDTO book : books) {
-            String imagePath = "/images/booklabel.png"; // тестове зображення
-            bookImages.put(book.getName(), imagePath);
-        }
-
+    public String listBooks(
+            BookDTO filter,
+            @RequestParam(required = false) String searchQuery,
+            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC)
+            Pageable pageable,
+            Model model
+    ) {
+        Page<BookDTO> books = bookService.searchBookWithPaginationSortingAndFiltering(filter,
+                pageable, searchQuery);
+        List<String> genres = bookService.getBooksGenres();
         model.addAttribute("books", books);
-        model.addAttribute("bookImages", bookImages);
-        model.addAttribute("currentPage", 0);
-        model.addAttribute("totalPages", 1);
-
+        model.addAttribute("genres", genres);
+        model.addAttribute("ageGroups", AgeGroup.values());
+        model.addAttribute("languages", Language.values());
         return "books";
     }
 
+    @GetMapping("/manage/add")
+    public String showAddBookForm(Model model) {
+        model.addAttribute("bookDTO", new BookDTO());
+        model.addAttribute("genres", bookService.getBooksGenres());
+        model.addAttribute("ageGroups", AgeGroup.values());
+        model.addAttribute("languages", Language.values());
+        return "book-add";
+    }
+
+    @PostMapping("/manage/add")
+    public String addBook(@Valid @ModelAttribute BookDTO bookDTO,
+                          BindingResult bindingResult,
+                          Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("genres", bookService.getBooksGenres());
+            model.addAttribute("ageGroups", AgeGroup.values());
+            model.addAttribute("languages", Language.values());
+            return "book-add";
+        }
+        bookService.addBook(bookDTO);
+        return "redirect:/books";
+    }
+
     @GetMapping("/{name}")
-    public String getBook(Model model,
-                          @PathVariable String name) {
-        BookDTO retrievedBook = bookService.getBookByName(name);
-        model.addAttribute("book", retrievedBook);
-        String bookImageUrl = bookService.getImageUrlByName(name);
-        model.addAttribute("bookImage", bookImageUrl);
+    public String detailedBook(@PathVariable String name, Model model) {
+        BookDTO bookDTO = bookService.getBookByName(name);
+        model.addAttribute("book", bookDTO);
         return "book-details";
     }
 
-    @PutMapping("/{name}")
-    ResponseEntity<BookDTO> updateBook(
-            @PathVariable String name,
-            @RequestBody BookDTO bookDTO
-    ) {
-        BookDTO updatedBook = bookService.updateBookByName(name, bookDTO);
-        return ResponseEntity.ok(updatedBook);
+    @GetMapping("/{name}/edit")
+    public String showEditForm(@PathVariable String name, Model model) {
+        BookDTO book = bookService.getBookByName(name);
+        model.addAttribute("bookDTO", book);
+        model.addAttribute("genres", bookService.getBooksGenres());
+        model.addAttribute("ageGroups", AgeGroup.values());
+        model.addAttribute("languages", Language.values());
+        return "book-edit";
     }
 
-    @PostMapping
-    ResponseEntity<String> addNewBook(@RequestBody BookDTO bookDTO) {
-        bookService.addBook(bookDTO);
-        return ResponseEntity.ok("Book has been added");
+    @PostMapping("/{name}/edit")
+    public String updateBook(@PathVariable String name,
+                             @Valid @ModelAttribute BookDTO bookDTO,
+                             BindingResult bindingResult,
+                             Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("genres", bookService.getBooksGenres());
+            model.addAttribute("ageGroups", AgeGroup.values());
+            model.addAttribute("languages", Language.values());
+            return "book-edit";
+        }
+
+        BookDTO updated = bookService.updateBookByName(name, bookDTO);
+
+        return "redirect:/books/" + updated.getName();
+    }
+
+    @PostMapping("/{name}/delete")
+    public String deleteBook(@PathVariable String name) {
+        bookService.deleteBookByName(name);
+        return "redirect:/books";
     }
 }

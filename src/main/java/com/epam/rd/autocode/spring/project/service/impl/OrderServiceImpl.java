@@ -2,7 +2,7 @@ package com.epam.rd.autocode.spring.project.service.impl;
 
 import java.util.List;
 
-import com.epam.rd.autocode.spring.project.mapper.OrderMapper;
+import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
 import com.epam.rd.autocode.spring.project.model.Order;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService{
     final private OrderRepository orderRepository;
-    final private OrderMapper orderMapper;
+    final private GenericMapper<Order, OrderDTO> orderMapper;
     @Override
     public List<OrderDTO> getOrdersByClient(String clientEmail) {
         return orderMapper.toDtoList(orderRepository.findByClientEmail(clientEmail));

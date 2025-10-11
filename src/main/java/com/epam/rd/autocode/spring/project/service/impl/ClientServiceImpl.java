@@ -3,27 +3,25 @@ package com.epam.rd.autocode.spring.project.service.impl;
 import com.epam.rd.autocode.spring.project.dto.ClientDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
-import com.epam.rd.autocode.spring.project.mapper.ClientMapper;
+import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
 import com.epam.rd.autocode.spring.project.model.Client;
 import com.epam.rd.autocode.spring.project.repo.ClientRepository;
 import com.epam.rd.autocode.spring.project.service.ClientService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+@RequiredArgsConstructor
 @Service
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
-    private final ClientMapper clientMapper;
+    private final GenericMapper<Client, ClientDTO> clientMapper;
 
     private static final String CLIENT_NOT_FOUND = "Client not found with email: ";
     private static final String CLIENT_ALREADY_EXISTS = "Client already exists: ";
-
-    public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper) {
-        this.clientRepository = clientRepository;
-        this.clientMapper = clientMapper;
-    }
 
     @Override
     public List<ClientDTO> getAllClients() {

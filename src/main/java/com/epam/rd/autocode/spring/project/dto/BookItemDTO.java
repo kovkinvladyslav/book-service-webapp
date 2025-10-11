@@ -1,10 +1,12 @@
 package com.epam.rd.autocode.spring.project.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class BookItemDTO {
     private String bookName;
     private Integer quantity;

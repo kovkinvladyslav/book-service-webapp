@@ -3,32 +3,50 @@ package com.epam.rd.autocode.spring.project.service.impl;
 import com.epam.rd.autocode.spring.project.dto.BookDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
-import com.epam.rd.autocode.spring.project.mapper.BookMapper;
+import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
 import com.epam.rd.autocode.spring.project.model.Book;
 import com.epam.rd.autocode.spring.project.repo.BookRepository;
 import com.epam.rd.autocode.spring.project.service.BookService;
+import com.epam.rd.autocode.spring.project.specification.BookSpecification;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
-    private final BookMapper bookMapper;
+    private final GenericMapper<Book, BookDTO> bookMapper;
 
     private static final String BOOK_NOT_FOUND = "Book not found with name: ";
     private static final String BOOK_ALREADY_EXISTS = "Book already exists: ";
 
-    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper) {
-        this.bookRepository = bookRepository;
-        this.bookMapper = bookMapper;
-    }
 
     @Override
     public List<BookDTO> getAllBooks() {
         return bookMapper.toDtoList(bookRepository.findAll());
     }
+
+    @Override
+    public Page<BookDTO> searchBookWithPaginationSortingAndFiltering(BookDTO filter, Pageable pageable, String searchPrompt) {
+
+        Specification<Book> specification = BookSpecification.getSpecification(filter, searchPrompt);
+        Page<Book> books = bookRepository.findAll(specification, pageable);
+
+        return books.map(bookMapper::toDto);
+    }
+
+    @Override
+    public List<String> getBooksGenres() {
+        return bookRepository.findDistinctGenres();
+    }
+
 
     @Override
     public BookDTO getBookByName(String name) {
@@ -38,6 +56,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public BookDTO addBook(BookDTO dto) {
         if (bookRepository.findByName(dto.getName()).isPresent()) {
             throw new AlreadyExistException(BOOK_ALREADY_EXISTS + dto.getName());
@@ -47,9 +66,16 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDTO updateBookByName(String name, BookDTO dto) {
-        Book existing = bookRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException(BOOK_NOT_FOUND + name));
+    @Transactional
+    public BookDTO updateBookByName(String oldName, BookDTO dto) {
+        Book existing = bookRepository.findByName(oldName)
+                .orElseThrow(() -> new NotFoundException(BOOK_NOT_FOUND + oldName));
+
+        if (!oldName.equals(dto.getName())) {
+            if (bookRepository.findByName(dto.getName()).isPresent()) {
+                throw new AlreadyExistException("Cannot rename: Book with name '" + dto.getName() + "' already exists");
+            }
+        }
 
         bookMapper.updateEntity(dto, existing);
         return bookMapper.toDto(bookRepository.save(existing));
@@ -60,12 +86,5 @@ public class BookServiceImpl implements BookService {
         Book existing = bookRepository.findByName(name)
                 .orElseThrow(() -> new NotFoundException(BOOK_NOT_FOUND + name));
         bookRepository.delete(existing);
-    }
-
-    @Override
-    public String getImageUrlByName(String bookName) {
-        return bookRepository.findByName(bookName)
-                .map(b -> b.getImage().getUrl())
-                .orElseThrow(() -> new NotFoundException("image not found for " + bookName));
     }
 }

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Already Exists</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .error-container {
+            background: white;
+            border-radius: 8px;
+            padding: 50px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        .error-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+        .error-code {
+            font-size: 48px;
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+        .error-title {
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+        }
+        .error-message {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            color: #856404;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+        .info-section h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .info-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-section li {
+            padding: 8px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .info-section li:before {
+            content: "• ";
+            color: #dc3545;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #c82333;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        @media (max-width: 600px) {
+            .error-container {
+                padding: 30px 25px;
+            }
+            .error-code {
+                font-size: 36px;
+            }
+            .error-title {
+                font-size: 20px;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="error-container">
+    <div class="error-header">
+        <div class="error-code">409</div>
+        <h1 class="error-title">Duplicate Entry</h1>
+    </div>
+
+    <div class="error-message" th:if="${errorMessage}">
+        <span th:text="${errorMessage}">A book with this name already exists in the system.</span>
+    </div>
+
+    <div class="info-section">
+        <h3>What you can do:</h3>
+        <ul>
+            <li>Go back and choose a different book name</li>
+            <li>Edit the existing book instead of creating a new one</li>
+            <li>Add edition or year information to make it unique</li>
+        </ul>
+    </div>
+
+    <div class="button-group">
+        <a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
+        <a href="/books" class="btn btn-secondary">All Books</a>
+    </div>
+</div>
+
+</body>
+</html>
