@@ -1,27 +1,62 @@
 package com.epam.rd.autocode.spring.project.specification;
-import com.epam.rd.autocode.spring.project.dto.BookDTO;
+
+import com.epam.rd.autocode.spring.project.dto.BookFilterDTO;
 import com.epam.rd.autocode.spring.project.model.Book;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookSpecification {
 
-    public static Specification<Book> getSpecification(BookDTO dto, String search) {
+    public static Specification<Book> getSpecification(BookFilterDTO filter, String search) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (hasText(dto.getName())) predicates.add(cb.like(cb.lower(root.get("name")), "%" + dto.getName().toLowerCase() + "%"));
-            if (hasText(dto.getGenre())) predicates.add(cb.equal(cb.lower(root.get("genre")), dto.getGenre().toLowerCase()));
-            if (dto.getAgeGroup() != null) predicates.add(cb.equal(root.get("ageGroup"), dto.getAgeGroup()));
-            if (dto.getPrice() != null) predicates.add(cb.equal(root.get("price"), dto.getPrice()));
-            if (dto.getPublicationDate() != null) predicates.add(cb.equal(root.get("publicationDate"), dto.getPublicationDate()));
-            if (hasText(dto.getAuthor())) predicates.add(cb.like(cb.lower(root.get("author")), "%" + dto.getAuthor().toLowerCase() + "%"));
-            if (dto.getPages() != null) predicates.add(cb.equal(root.get("pages"), dto.getPages()));
-            if (hasText(dto.getCharacteristics())) predicates.add(cb.like(cb.lower(root.get("characteristics")), "%" + dto.getCharacteristics().toLowerCase() + "%"));
-            if (hasText(dto.getDescription())) predicates.add(cb.like(cb.lower(root.get("description")), "%" + dto.getDescription().toLowerCase() + "%"));
-            if (dto.getLanguage() != null) predicates.add(cb.equal(root.get("language"), dto.getLanguage()));
+            if (hasText(filter.getName())) {
+                predicates.add(cb.like(cb.lower(root.get("name")), "%" + filter.getName().toLowerCase() + "%"));
+            }
+
+            if (hasText(filter.getGenre())) {
+                predicates.add(cb.equal(cb.lower(root.get("genre")), filter.getGenre().toLowerCase()));
+            }
+
+            if (filter.getAgeGroup() != null) {
+                predicates.add(cb.equal(root.get("ageGroup"), filter.getAgeGroup()));
+            }
+
+            if (filter.getMinPrice() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("price"), filter.getMinPrice()));
+            }
+
+            if (filter.getMaxPrice() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("price"), filter.getMaxPrice()));
+            }
+
+            if (filter.getPublicationDate() != null) {
+                predicates.add(cb.equal(root.get("publicationDate"), filter.getPublicationDate()));
+            }
+
+            if (hasText(filter.getAuthor())) {
+                predicates.add(cb.like(cb.lower(root.get("author")), "%" + filter.getAuthor().toLowerCase() + "%"));
+            }
+
+            if (filter.getPages() != null) {
+                predicates.add(cb.equal(root.get("pages"), filter.getPages()));
+            }
+
+            if (hasText(filter.getCharacteristics())) {
+                predicates.add(cb.like(cb.lower(root.get("characteristics")), "%" + filter.getCharacteristics().toLowerCase() + "%"));
+            }
+
+            if (hasText(filter.getDescription())) {
+                predicates.add(cb.like(cb.lower(root.get("description")), "%" + filter.getDescription().toLowerCase() + "%"));
+            }
+
+            if (filter.getLanguage() != null) {
+                predicates.add(cb.equal(root.get("language"), filter.getLanguage()));
+            }
 
             if (hasText(search)) {
                 String term = "%" + search.toLowerCase() + "%";

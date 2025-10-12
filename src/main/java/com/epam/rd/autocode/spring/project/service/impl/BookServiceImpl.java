@@ -1,6 +1,7 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
 import com.epam.rd.autocode.spring.project.dto.BookDTO;
+import com.epam.rd.autocode.spring.project.dto.BookFilterDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
@@ -34,7 +35,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<BookDTO> searchBookWithPaginationSortingAndFiltering(BookDTO filter, Pageable pageable, String searchPrompt) {
+    public Page<BookDTO> searchBookWithPaginationSortingAndFiltering(
+            BookFilterDTO filter,
+            Pageable pageable,
+            String searchPrompt) {
 
         Specification<Book> specification = BookSpecification.getSpecification(filter, searchPrompt);
         Page<Book> books = bookRepository.findAll(specification, pageable);

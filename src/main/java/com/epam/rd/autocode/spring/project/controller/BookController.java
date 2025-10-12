@@ -1,6 +1,7 @@
 package com.epam.rd.autocode.spring.project.controller;
 
 import com.epam.rd.autocode.spring.project.dto.BookDTO;
+import com.epam.rd.autocode.spring.project.dto.BookFilterDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import com.epam.rd.autocode.spring.project.model.enums.Language;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -26,19 +28,22 @@ public class BookController {
 
     @GetMapping
     public String listBooks(
-            BookDTO filter,
+            @ModelAttribute BookFilterDTO filter,
             @RequestParam(required = false) String searchQuery,
             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable,
             Model model
     ) {
-        Page<BookDTO> books = bookService.searchBookWithPaginationSortingAndFiltering(filter,
-                pageable, searchQuery);
+        Page<BookDTO> books = bookService.searchBookWithPaginationSortingAndFiltering(
+                filter, pageable, searchQuery);
+
         List<String> genres = bookService.getBooksGenres();
+
         model.addAttribute("books", books);
         model.addAttribute("genres", genres);
         model.addAttribute("ageGroups", AgeGroup.values());
         model.addAttribute("languages", Language.values());
+
         return "books";
     }
 
