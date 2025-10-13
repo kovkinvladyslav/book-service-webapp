@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Cart - BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="content-wrapper">
+    <h1 class="page-title">My Cart</h1>
+
+    <!-- Empty cart -->
+    <div th:if="${order == null or order.bookItems == null or order.bookItems.isEmpty()}" class="empty-state">
+        <h2>Your cart is empty 🛒</h2>
+        <p>Looks like you haven’t added anything yet.</p>
+        <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
+    </div>
+
+    <!-- Non-empty cart -->
+    <div th:if="${order != null and order.bookItems != null and !order.bookItems.isEmpty()}" class="cart-container">
+        <table class="cart-table">
+            <thead>
+            <tr>
+                <th>Book</th>
+                <th>Author</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th style="text-align:center;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${order.bookItems}">
+                <td th:text="${item.book.name}"></td>
+                <td th:text="${item.book.author}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(item.book.price, 1, 2)}"></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(item.book.price * item.quantity, 1, 2)}"></td>
+                <td class="cart-actions">
+                    <form th:action="@{/orders/remove}" method="post">
+                        <input type="hidden" name="name" th:value="${item.book.name}">
+                        <button type="submit" class="btn btn-secondary btn-small">−</button>
+                    </form>
+                    <form th:action="@{/orders/add}" method="post">
+                        <input type="hidden" name="name" th:value="${item.book.name}">
+                        <button type="submit" class="btn btn-secondary btn-small">+</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <div class="cart-total">
+                <span>Total:</span>
+                <strong th:text="'$' + ${#numbers.formatDecimal(order.price, 1, 2)}"></strong>
+            </div>
+            <div class="cart-buttons">
+                <form th:action="@{/orders/checkout}" method="post">
+                    <button type="submit" class="btn btn-primary">Place Order</button>
+                </form>
+                <a th:href="@{/books}" class="btn btn-secondary">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

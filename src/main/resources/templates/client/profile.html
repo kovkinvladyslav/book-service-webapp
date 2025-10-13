@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="content-wrapper">
+    <div class="container">
+        <h1 style="margin-bottom: 25px;">My Profile</h1>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" th:value="${client.name}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="text" th:value="${client.email}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Balance</label>
+                <input type="text" th:value="'$' + ${#numbers.formatDecimal(client.balance, 1, 2)}" readonly>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/books" class="btn btn-primary">Browse Books</a>
+            <a href="/client/dashboard" class="btn btn-secondary">View Orders</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

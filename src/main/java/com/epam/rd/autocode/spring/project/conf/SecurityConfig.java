@@ -26,16 +26,19 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/register").anonymous()
-                        .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/js/**").permitAll()
 
                         .requestMatchers("/books").permitAll()
-                        .requestMatchers("/books/{name}").permitAll()
+                        .requestMatchers("/books/**").permitAll()
 
                         .requestMatchers("/books/manage/**").hasRole("EMPLOYEE")
                         .requestMatchers("/books/*/edit").hasRole("EMPLOYEE")
                         .requestMatchers("/books/*/delete").hasRole("EMPLOYEE")
 
                         .requestMatchers("/orders/**").hasAnyRole("CLIENT", "EMPLOYEE")
+
+                        .requestMatchers("/client/**").hasRole("CLIENT")
+
 
                         .anyRequest().authenticated()
                 )
@@ -52,7 +55,8 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling(ex -> ex
-                        .accessDeniedHandler((req, res, ex1) -> res.sendRedirect("/"))
+                        .accessDeniedHandler((req, res, ex1) ->
+                                res.sendRedirect("/"))
                 )
                 .userDetailsService(userDetailsService);
 
@@ -62,11 +66,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
     }
 }

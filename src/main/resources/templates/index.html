@@ -9,62 +9,50 @@
 </head>
 <body>
 
-<!-- Navbar -->
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="index-container">
-    <!-- FOR GUESTS -->
+    <!-- GUEST -->
     <div class="index-card" sec:authorize="!isAuthenticated()">
         <h1>BookStore</h1>
         <p class="subtitle">Discover your next favorite book</p>
-
         <div class="index-button-group">
             <a th:href="@{/login}" class="btn btn-primary">Login</a>
             <a th:href="@{/register}" class="btn btn-secondary">Register</a>
-
             <div class="divider"><span>or</span></div>
-
             <a th:href="@{/books}" class="btn btn-secondary">Browse Books</a>
         </div>
     </div>
 
-    <!-- FOR CLIENTS -->
+    <!-- CLIENT -->
     <div class="index-card" sec:authorize="hasRole('CLIENT')">
-        <h1 class="greeting">Welcome back</h1>
-        <p class="greeting-email" sec:authentication="name"></p>
+        <h1>Welcome back!</h1>
+        <p sec:authentication="name"></p>
         <span class="role-badge role-client">Client</span>
-
         <div class="index-button-group">
             <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
+            <a th:href="@{/orders/cart}" class="btn btn-secondary">My Cart</a>
             <a th:href="@{/orders}" class="btn btn-secondary">My Orders</a>
-
-            <div class="divider"><span></span></div>
-
-            <form th:action="@{/logout}" method="post" style="width: 100%;">
-                <button type="submit" class="btn btn-danger" style="width: 100%;">Logout</button>
+            <form th:action="@{/logout}" method="post" style="width:100%; margin-top:10px;">
+                <button type="submit" class="btn btn-danger" style="width:100%;">Logout</button>
             </form>
         </div>
     </div>
 
-    <!-- FOR EMPLOYEES -->
+    <!-- EMPLOYEE -->
     <div class="index-card" sec:authorize="hasRole('EMPLOYEE')">
-        <h1 class="greeting">Welcome back</h1>
-        <p class="greeting-email" sec:authentication="name"></p>
+        <h1>Welcome back!</h1>
+        <p sec:authentication="name"></p>
         <span class="role-badge role-employee">Employee</span>
-
         <div class="index-button-group">
             <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
-            <a th:href="@{/books/manage/add}" class="btn btn-secondary">Add New Book</a>
+            <a th:href="@{/books/manage/add}" class="btn btn-secondary">Add Book</a>
             <a th:href="@{/orders/manage}" class="btn btn-secondary">Manage Orders</a>
-
-            <div class="divider"><span></span></div>
-
-            <form th:action="@{/logout}" method="post" style="width: 100%;">
-                <button type="submit" class="btn btn-danger" style="width: 100%;">Logout</button>
+            <form th:action="@{/logout}" method="post" style="width:100%; margin-top:10px;">
+                <button type="submit" class="btn btn-danger" style="width:100%;">Logout</button>
             </form>
         </div>
     </div>
 </div>
-
 </body>
 </html>

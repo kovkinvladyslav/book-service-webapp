@@ -5,18 +5,16 @@
     <meta charset="UTF-8">
 </head>
 <body>
-
-<!-- NAVBAR FRAGMENT -->
 <nav th:fragment="navbar" class="navbar">
     <a href="/" class="navbar-brand">
-        <span>📚</span>
-        <span>BookStore</span>
+        <span>📚</span> <span>BookStore</span>
     </a>
 
     <ul class="navbar-menu">
+        <!-- Always visible -->
         <li><a href="/books" class="navbar-link">Books</a></li>
 
-        <!-- FOR GUESTS (not authenticated) -->
+        <!-- GUEST -->
         <li sec:authorize="!isAuthenticated()">
             <a href="/login" class="navbar-link">Login</a>
         </li>
@@ -24,12 +22,15 @@
             <a href="/register" class="navbar-link navbar-link-register">Register</a>
         </li>
 
-        <!-- FOR CLIENTS -->
+        <!-- CLIENT -->
+        <li sec:authorize="hasRole('CLIENT')">
+            <a href="/orders/cart" class="navbar-link">🛒 My Cart</a>
+        </li>
         <li sec:authorize="hasRole('CLIENT')">
             <a href="/orders" class="navbar-link">My Orders</a>
         </li>
 
-        <!-- FOR EMPLOYEES -->
+        <!-- EMPLOYEE -->
         <li sec:authorize="hasRole('EMPLOYEE')">
             <a href="/books/manage/add" class="navbar-link">Add Book</a>
         </li>
@@ -37,15 +38,14 @@
             <a href="/orders/manage" class="navbar-link">Manage Orders</a>
         </li>
 
-        <!-- FOR AUTHENTICATED USERS -->
+        <!-- Authenticated user -->
         <li sec:authorize="isAuthenticated()" class="navbar-user">
             <span class="navbar-email" sec:authentication="name"></span>
-            <form th:action="@{/logout}" method="post" style="display: inline;">
+            <form th:action="@{/logout}" method="post" style="display:inline;">
                 <button type="submit" class="navbar-link navbar-link-logout">Logout</button>
             </form>
         </li>
     </ul>
 </nav>
-
 </body>
 </html>

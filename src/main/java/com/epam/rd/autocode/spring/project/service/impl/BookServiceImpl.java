@@ -2,6 +2,7 @@ package com.epam.rd.autocode.spring.project.service.impl;
 
 import com.epam.rd.autocode.spring.project.dto.BookDTO;
 import com.epam.rd.autocode.spring.project.dto.BookFilterDTO;
+import com.epam.rd.autocode.spring.project.dto.BookItemDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
@@ -16,7 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -49,6 +53,21 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<String> getBooksGenres() {
         return bookRepository.findDistinctGenres();
+    }
+
+    @Override
+    public Map<BookDTO, Integer> getBooksFromBookItems(List<BookItemDTO> bookItemDTOList) {
+        Map<BookDTO, Integer> books = new HashMap<>();
+        for(var item : bookItemDTOList) {
+            books.put(getBookByName(item.getBook().getName()), item.getQuantity());
+        }
+        return books;
+    }
+
+    @Override
+    public Book getEntityByName(String name) {
+        return bookRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("Book not found: " + name));
     }
 
 

@@ -1,14 +1,8 @@
 package com.epam.rd.autocode.spring.project.conf;
 
-import com.epam.rd.autocode.spring.project.dto.BookDTO;
-import com.epam.rd.autocode.spring.project.dto.ClientDTO;
-import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
-import com.epam.rd.autocode.spring.project.dto.OrderDTO;
+import com.epam.rd.autocode.spring.project.dto.*;
 import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
-import com.epam.rd.autocode.spring.project.model.Book;
-import com.epam.rd.autocode.spring.project.model.Client;
-import com.epam.rd.autocode.spring.project.model.Employee;
-import com.epam.rd.autocode.spring.project.model.Order;
+import com.epam.rd.autocode.spring.project.model.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,10 +27,11 @@ public class MapperConfig {
     public GenericMapper<Order, OrderDTO> orderMapper(ModelMapper modelMapper) {
         modelMapper.typeMap(Order.class, OrderDTO.class)
                 .addMapping(src -> src.getClient().getEmail(), OrderDTO::setClientEmail)
-                .addMapping(src -> src.getEmployee().getEmail(), OrderDTO::setEmployeeEmail);
-
+                .addMapping(src -> src.getEmployee().getEmail(), OrderDTO::setEmployeeEmail)
+                .addMappings(mapper -> mapper.map(Order::getBookItems, OrderDTO::setBookItems));
         return new GenericMapper<>(modelMapper, Order.class, OrderDTO.class);
     }
+
 
     @Bean("clientMapper")
     public GenericMapper<Client, ClientDTO> clientMapper(ModelMapper modelMapper) {
@@ -47,4 +42,11 @@ public class MapperConfig {
     public GenericMapper<Employee, EmployeeDTO> employeeMapper(ModelMapper modelMapper) {
         return new GenericMapper<>(modelMapper, Employee.class, EmployeeDTO.class);
     }
+
+    @Bean("bookItemMapper")
+    public GenericMapper<BookItem, BookItemDTO> bookItemMapper(ModelMapper modelMapper) {
+        return new GenericMapper<>(modelMapper, BookItem.class, BookItemDTO.class);
+    }
+
+
 }
