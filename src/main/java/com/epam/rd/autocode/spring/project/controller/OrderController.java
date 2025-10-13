@@ -46,16 +46,6 @@ public class OrderController {
                 .findFirst()
                 .orElse(null);
 
-        if(draft != null) {
-            List<BookItemDTO> bookItems = draft.getBookItems();
-            if(bookItems == null) {
-                System.out.println("NULL");
-            } else {
-                System.out.println("Order has " + bookItems + " items now");
-            }
-        }
-
-
         model.addAttribute("order", draft);
         return "client/cart";
     }
