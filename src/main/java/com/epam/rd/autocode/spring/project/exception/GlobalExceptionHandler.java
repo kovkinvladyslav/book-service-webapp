@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public String handleIllegalState(IllegalStateException ex, Model model) {
         model.addAttribute("errorMessage", ex.getMessage());
-        return "redirect:/error/insufficient-funds.html";
+        return "/error/insufficient-funds.html";
     }
 
     @ExceptionHandler(UserAlreadyExists.class)
