@@ -7,7 +7,7 @@
 <body>
 <nav th:fragment="navbar" class="navbar">
     <a href="/" class="navbar-brand">
-        <span>📚</span> <span>BookStore</span>
+        <span>BookStore</span>
     </a>
 
     <ul class="navbar-menu">
@@ -24,10 +24,13 @@
 
         <!-- CLIENT -->
         <li sec:authorize="hasRole('CLIENT')">
-            <a href="/orders/cart" class="navbar-link">🛒 My Cart</a>
+            <a href="/orders/cart" class="navbar-link">My Cart</a>
         </li>
         <li sec:authorize="hasRole('CLIENT')">
             <a href="/orders" class="navbar-link">My Orders</a>
+        </li>
+        <li sec:authorize="hasRole('CLIENT')">
+            <a href="/client/profile" class="navbar-link">Profile</a>
         </li>
 
         <!-- EMPLOYEE -->
@@ -35,12 +38,16 @@
             <a href="/books/manage/add" class="navbar-link">Add Book</a>
         </li>
         <li sec:authorize="hasRole('EMPLOYEE')">
-            <a href="/orders/manage" class="navbar-link">Manage Orders</a>
+            <a href="/employee/orders" class="navbar-link">Manage Orders</a>
+        </li>
+        <li sec:authorize="hasRole('EMPLOYEE')">
+            <a href="/employee/profile" class="navbar-link">Profile</a>
         </li>
 
         <!-- Authenticated user -->
         <li sec:authorize="isAuthenticated()" class="navbar-user">
             <span class="navbar-email" sec:authentication="name"></span>
+
             <form th:action="@{/logout}" method="post" style="display:inline;">
                 <button type="submit" class="navbar-link navbar-link-logout">Logout</button>
             </form>

@@ -9,7 +9,9 @@ import com.epam.rd.autocode.spring.project.repository.ClientRepository;
 import com.epam.rd.autocode.spring.project.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -43,6 +45,25 @@ public class ClientServiceImpl implements ClientService {
         Client client = clientMapper.toEntity(dto);
         return clientMapper.toDto(clientRepository.save(client));
     }
+
+    @Override
+    @Transactional
+    public void deposit(String clientEmail, BigDecimal amount) {
+        Client client = clientRepository.findByEmail(clientEmail)
+                .orElseThrow(() -> new NotFoundException("Client not found: " + clientEmail));
+
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Deposit amount must be positive");
+        }
+
+        if (client.getBalance() == null) {
+            client.setBalance(BigDecimal.ZERO);
+        }
+
+        client.setBalance(client.getBalance().add(amount));
+        clientRepository.save(client);
+    }
+
 
     @Override
     public ClientDTO updateClientByEmail(String email, ClientDTO dto) {

@@ -26,4 +26,11 @@ public class GlobalExceptionHandler {
         return "/";
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public String handleIllegalState(IllegalStateException ex, Model model) {
+        model.addAttribute("errorMessage", ex.getMessage());
+        return "error/insufficient-funds.html";
+    }
+
+
 }

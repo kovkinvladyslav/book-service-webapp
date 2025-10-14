@@ -16,7 +16,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Page<Book> findAll(Specification<Book> specification, Pageable pageable);
 
-    @Cacheable("genres")
     @Query("SELECT DISTINCT b.genre FROM Book b WHERE b.genre IS NOT NULL ORDER BY b.genre")
     List<String> findDistinctGenres();
 }

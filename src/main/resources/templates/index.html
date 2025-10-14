@@ -26,9 +26,9 @@
 
     <!-- CLIENT -->
     <div class="index-card" sec:authorize="hasRole('CLIENT')">
-        <h1>Welcome back!</h1>
-        <p sec:authentication="name"></p>
+        <h1 th:text="'Welcome back, ' + ${displayName} + '!'">Welcome back!</h1>
         <span class="role-badge role-client">Client</span>
+
         <div class="index-button-group">
             <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
             <a th:href="@{/orders/cart}" class="btn btn-secondary">My Cart</a>
@@ -41,9 +41,9 @@
 
     <!-- EMPLOYEE -->
     <div class="index-card" sec:authorize="hasRole('EMPLOYEE')">
-        <h1>Welcome back!</h1>
-        <p sec:authentication="name"></p>
+        <h1 th:text="'Welcome back, ' + ${displayName} + '!'">Welcome back!</h1>
         <span class="role-badge role-employee">Employee</span>
+
         <div class="index-button-group">
             <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
             <a th:href="@{/books/manage/add}" class="btn btn-secondary">Add Book</a>
@@ -53,6 +53,7 @@
             </form>
         </div>
     </div>
+
 </div>
 </body>
 </html>

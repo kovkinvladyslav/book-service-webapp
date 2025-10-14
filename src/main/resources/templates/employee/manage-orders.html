@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Orders - Employee</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <style>
+        .orders-section { margin-top: 40px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th { background-color: #f8f8f8; }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .status-PLACED { background-color: #ffefcc; color: #b36b00; }
+        .status-PROCESSING { background-color: #e6f4ff; color: #005fad; }
+        .status-COMPLETED { background-color: #e8ffe8; color: #137d00; }
+        .btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .empty-state {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="content-wrapper">
+    <h1 class="page-title">Manage Orders</h1>
+
+    <!-- Section 1: New Orders -->
+    <section class="orders-section">
+        <h2>New Orders (PLACED)</h2>
+
+        <div th:if="${newOrders == null or newOrders.isEmpty()}" class="empty-state">
+            <p>No new orders yet</p>
+        </div>
+
+        <table th:if="${newOrders != null and !newOrders.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Client</th>
+                <th>Date</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${newOrders}">
+                <td th:text="${order.clientEmail}"></td>
+                <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(order.price, 1, 2)}"></td>
+                <td>
+                    <span th:text="${order.orderStatus}"
+                          th:classappend="'status-badge status-' + ${order.orderStatus}"></span>
+                </td>
+                <td>
+                    <form th:action="@{'/orders/manage/accept/' + ${order.id}}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn btn-primary">Accept</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Section 2: Active Orders -->
+    <section class="orders-section">
+        <h2>My Active Orders</h2>
+
+        <div th:if="${myOrders == null or myOrders.isEmpty()}" class="empty-state">
+            <p>You haven’t accepted any orders yet.</p>
+        </div>
+
+        <table th:if="${myOrders != null and !myOrders.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Client</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${myOrders}">
+                <td th:text="${order.clientEmail}"></td>
+                <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <span th:text="${order.orderStatus}"
+                          th:classappend="'status-badge status-' + ${order.orderStatus}"></span>
+                </td>
+                <td th:text="'$' + ${#numbers.formatDecimal(order.price, 1, 2)}"></td>
+                <td>
+                    <form th:if="${order.orderStatus.name() == 'PROCESSING'}"
+                          th:action="@{'/orders/manage/complete/' + ${order.id}}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn btn-success">Mark Completed</button>
+                    </form>
+
+                    <span th:if="${order.orderStatus.name() == 'COMPLETED'}">Completed</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+</body>
+</html>

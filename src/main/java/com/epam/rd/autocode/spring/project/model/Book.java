@@ -5,13 +5,19 @@ import java.time.LocalDate;
 
 import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import com.epam.rd.autocode.spring.project.model.enums.Language;
-
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.*;
 
 @Entity
 @Table(name = "books")
+@SQLDelete(sql = "UPDATE table_product SET deleted = true WHERE id=?")
+@SQLDelete(sql = "UPDATE books SET deleted = true WHERE id = ?")
+@FilterDef(name = "deletedBookFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
+@Filter(name = "deletedBookFilter", condition = "deleted = :isDeleted")
+
 @Getter
 @Setter
 public class Book {
@@ -32,4 +38,6 @@ public class Book {
     private String description;
     @Enumerated(EnumType.STRING)
     private Language language;
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean deleted = Boolean.FALSE;
 }

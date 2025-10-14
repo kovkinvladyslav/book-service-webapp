@@ -3,8 +3,10 @@ package com.epam.rd.autocode.spring.project.controller;
 import com.epam.rd.autocode.spring.project.dto.ClientDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.service.ClientService;
+import com.epam.rd.autocode.spring.project.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,11 +21,8 @@ public class AuthController {
 
     private final ClientService clientService;
     private final PasswordEncoder passwordEncoder;
+    private final EmployeeService employeeService;
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(required = false) String error,
@@ -70,6 +69,25 @@ public class AuthController {
         clientService.addClient(clientDTO);
         return "redirect:/login?registered";
     }
+
+    @GetMapping("/")
+    public String index(Authentication auth, Model model) {
+        if (auth != null) {
+            String email = auth.getName();
+            String displayName = email;
+
+            if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENT"))) {
+                displayName = clientService.getClientByEmail(email).getName();
+            } else if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_EMPLOYEE"))) {
+                displayName = employeeService.getEmployeeByEmail(email).getName();
+            }
+
+            model.addAttribute("displayName", displayName);
+        }
+
+        return "index";
+    }
+
 
     @ExceptionHandler(AlreadyExistException.class)
     public String handleRegistrationError(AlreadyExistException ex) {

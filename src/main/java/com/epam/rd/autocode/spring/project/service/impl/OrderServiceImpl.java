@@ -6,19 +6,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.epam.rd.autocode.spring.project.dto.BookDTO;
-import com.epam.rd.autocode.spring.project.dto.ClientDTO;
+import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
-import com.epam.rd.autocode.spring.project.model.Book;
-import com.epam.rd.autocode.spring.project.model.BookItem;
-import com.epam.rd.autocode.spring.project.model.Client;
-import com.epam.rd.autocode.spring.project.model.Order;
+import com.epam.rd.autocode.spring.project.model.*;
 import com.epam.rd.autocode.spring.project.model.enums.OrderStatus;
 import com.epam.rd.autocode.spring.project.repository.ClientRepository;
+import com.epam.rd.autocode.spring.project.repository.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.service.BookService;
-import com.epam.rd.autocode.spring.project.service.ClientService;
-import org.aspectj.weaver.ast.Or;
+import com.epam.rd.autocode.spring.project.service.EmployeeService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.epam.rd.autocode.spring.project.dto.OrderDTO;
@@ -30,13 +27,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService{
-    final private OrderRepository orderRepository;
-    final private GenericMapper<Order, OrderDTO> orderMapper;
-    final private ClientService clientService;
-    final private GenericMapper<Client, ClientDTO> clientMapper;
-    final private BookService bookService;
-    final private GenericMapper<Book, BookDTO> bookMapper;
-    final private ClientRepository clientRepository;
+    private final OrderRepository orderRepository;
+    private final GenericMapper<Order, OrderDTO> orderMapper;
+    private final BookService bookService;
+    private final ClientRepository clientRepository;
+    private final PaymentServiceImpl paymentService;
+    private final EmployeeRepository employeeRepository;
+
     @Override
     public List<OrderDTO> getOrdersByClient(String clientEmail) {
         return orderMapper.toDtoList(orderRepository.findByClientEmail(clientEmail));
@@ -122,8 +119,20 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public void placeOrder(String clientEmail) {
         Order draft = orderRepository.findByClientEmailAndOrderStatus(clientEmail, OrderStatus.DRAFT)
-                .orElseThrow(() -> new NotFoundException("No draft order for" + clientEmail));
+                .orElseThrow(() -> new NotFoundException("No draft order for " + clientEmail));
+
+        BigDecimal total = draft.getBookItems().stream()
+                .map(item -> item.getBook().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (!paymentService.processPayment(clientEmail, total)) {
+            throw new IllegalStateException("Insufficient balance. Please top up your account.");
+        }
+
+        draft.setPrice(total);
         draft.setOrderStatus(OrderStatus.PLACED);
+        draft.setOrderDate(LocalDateTime.now());
+
         orderRepository.save(draft);
     }
 
@@ -140,6 +149,65 @@ public class OrderServiceImpl implements OrderService{
         }
 
         order.setPrice(total);
+    }
+
+    @Override
+    @Transactional
+    public void assignOrderToEmployee(Long orderId, String employeeEmail) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+
+        if (order.getOrderStatus() != OrderStatus.PLACED) {
+            throw new IllegalStateException("Order must be PLACED before accepting");
+        }
+        if (order.getEmployee() != null) {
+            throw new IllegalStateException("Order already assigned");
+        }
+
+        Employee employee = employeeRepository.findByEmail(employeeEmail)
+                .orElseThrow(() -> new NotFoundException("Employee not found: " + employeeEmail));
+
+        order.setEmployee(employee);
+        order.setOrderStatus(OrderStatus.PROCESSING);
+        orderRepository.save(order);
+    }
+
+    @Override
+    @Transactional
+    public void markOrderAsCompleted(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+
+        order.setOrderStatus(OrderStatus.COMPLETED);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public List<OrderDTO> getOrdersByStatus(OrderStatus status) {
+        return orderMapper.toDtoList(orderRepository.findByOrderStatus(status));
+    }
+
+    @Override
+    @Transactional
+    public void cancelOrder(String clientEmail, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+
+        if (!order.getClient().getEmail().equals(clientEmail)) {
+            throw new IllegalStateException("You can only cancel your own orders.");
+        }
+
+        if (order.getOrderStatus() != OrderStatus.PLACED) {
+            throw new IllegalStateException("Only PLACED orders can be cancelled.");
+        }
+
+        BigDecimal refundAmount = order.getPrice();
+        if (refundAmount != null && refundAmount.compareTo(BigDecimal.ZERO) > 0) {
+            paymentService.deposit(clientEmail, refundAmount);
+        }
+
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
     }
 
 }

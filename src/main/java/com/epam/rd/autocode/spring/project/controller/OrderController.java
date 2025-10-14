@@ -57,4 +57,20 @@ public class OrderController {
         return "redirect:/orders";
     }
 
+    @GetMapping
+    @PreAuthorize("hasRole('CLIENT')")
+    public String listClientOrders(Authentication auth, Model model) {
+        List<OrderDTO> orders = orderService.getOrdersByClient(auth.getName()).stream()
+                .filter(orderDTO -> !orderDTO.getOrderStatus().equals(OrderStatus.DRAFT)).toList();
+        model.addAttribute("orders", orders);
+        return "client/orders";
+    }
+
+    @PostMapping("/cancel/{id}")
+    @PreAuthorize("hasRole('CLIENT')")
+    public String cancelOrder(@PathVariable Long id, Authentication auth) {
+        orderService.cancelOrder(auth.getName(), id);
+        return "redirect:/orders";
+    }
+
 }

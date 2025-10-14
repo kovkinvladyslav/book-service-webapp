@@ -970,3 +970,80 @@ h1 {
         width: 100%;
     }
 }
+
+/* ==================== ORDERS PAGE ==================== */
+.orders-container {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-placed {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.status-processing {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.balance-card {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    max-width: 400px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.balance-card h2 {
+    font-size: 32px;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.deposit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.deposit-form input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.deposit-form button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.status-CANCELLED {
+    background-color: #ffe6e6;
+    color: #b30000;
+}

@@ -14,22 +14,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/client")
+@PreAuthorize("hasRole('CLIENT')")
 public class ClientController {
     private final ClientService clientService;
-    private final OrderService orderService;
-
-    @GetMapping("/dashboard")
-    @PreAuthorize("hasRole('CLIENT')")
-    public String dashboard(Model model, Authentication authentication) {
-        var email = authentication.getName();
-        model.addAttribute("client", clientService.getClientByEmail(email));
-        model.addAttribute("orders", orderService.getOrdersByClient(email));
-        return "client/dashboard";
-    }
 
     @GetMapping("/profile")
     public String profile(Model model, Authentication authentication) {
         model.addAttribute("client", clientService.getClientByEmail(authentication.getName()));
         return "client/profile";
     }
+
+    @GetMapping("/balance")
+    public String showBalance(Authentication auth, Model model) {
+        var client = clientService.getClientByEmail(auth.getName());
+        model.addAttribute("client", client);
+        return "client/balance";
+    }
+
 }
