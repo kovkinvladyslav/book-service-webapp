@@ -13,7 +13,7 @@
 
     <!-- Empty cart -->
     <div th:if="${order == null or order.bookItems == null or order.bookItems.isEmpty()}" class="empty-state">
-        <h2>Your cart is empty 🛒</h2>
+        <h2>Your cart is empty</h2>
         <p>Looks like you haven’t added anything yet.</p>
         <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
     </div>

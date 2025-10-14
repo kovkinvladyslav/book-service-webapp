@@ -26,12 +26,13 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    @PreAuthorize("hasRole('CLIENT')")
     @PostMapping("/add")
     public String addToCart(@RequestParam String name, Authentication authentication) {
         orderService.addBookToOrder(name, authentication.getName());
         return "redirect:/orders/cart";
     }
-
+    @PreAuthorize("hasRole('CLIENT')")
     @PostMapping("/remove")
     public String removeFromCart(@RequestParam String name, Authentication authentication) {
         orderService.removeBookFromOrder(name, authentication.getName());
@@ -50,7 +51,7 @@ public class OrderController {
         return "client/cart";
     }
 
-
+    @PreAuthorize("hasRole('CLIENT')")
     @PostMapping("/checkout")
     public String placeOrder(Authentication auth) {
         orderService.placeOrder(auth.getName());

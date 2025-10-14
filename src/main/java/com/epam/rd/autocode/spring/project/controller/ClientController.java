@@ -9,7 +9,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.math.BigDecimal;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,6 +33,11 @@ public class ClientController {
         var client = clientService.getClientByEmail(auth.getName());
         model.addAttribute("client", client);
         return "client/balance";
+    }
+
+    @PostMapping("/deposit") public String depositFunds(@RequestParam BigDecimal amount, Authentication auth) {
+        clientService.deposit(auth.getName(), amount);
+        return "redirect:/client/balance";
     }
 
 }

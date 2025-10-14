@@ -34,7 +34,7 @@
             <!-- Add to Cart for Client -->
             <form th:action="@{/orders/add}" method="post" sec:authorize="hasRole('CLIENT')" style="display:inline;">
                 <input type="hidden" name="name" th:value="${book.name}">
-                <button class="btn btn-primary" type="submit">🛒 Add to Cart</button>
+                <button class="btn btn-primary" type="submit">Add to Cart</button>
             </form>
 
             <!-- Edit/Delete for Employee -->

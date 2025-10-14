@@ -34,13 +34,14 @@ public class EmployeeController {
     @PostMapping("/accept/{id}")
     public String acceptOrder(@PathVariable Long id, Authentication auth) {
         orderService.assignOrderToEmployee(id, auth.getName());
-        return "redirect:/orders/manage";
+
+        return "redirect:/orders/manage-orders";
     }
 
     @PostMapping("/complete/{id}")
     public String completeOrder(@PathVariable Long id) {
         orderService.markOrderAsCompleted(id);
-        return "redirect:/orders/manage";
+        return "redirect:/orders/manage-orders";
     }
 
 
