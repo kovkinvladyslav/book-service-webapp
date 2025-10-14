@@ -87,10 +87,4 @@ public class AuthController {
 
         return "index";
     }
-
-
-    @ExceptionHandler(AlreadyExistException.class)
-    public String handleRegistrationError(AlreadyExistException ex) {
-        return "redirect:/register?error=exists";
-    }
 }

@@ -3,6 +3,7 @@ package com.epam.rd.autocode.spring.project.service.impl;
 import com.epam.rd.autocode.spring.project.dto.ClientDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
+import com.epam.rd.autocode.spring.project.exception.UserAlreadyExists;
 import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
 import com.epam.rd.autocode.spring.project.model.Client;
 import com.epam.rd.autocode.spring.project.repository.ClientRepository;
@@ -40,7 +41,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientDTO addClient(ClientDTO dto) {
         if (clientRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new AlreadyExistException(CLIENT_ALREADY_EXISTS + dto.getEmail());
+            throw new UserAlreadyExists(CLIENT_ALREADY_EXISTS + dto.getEmail());
         }
         Client client = clientMapper.toEntity(dto);
         return clientMapper.toDto(clientRepository.save(client));
