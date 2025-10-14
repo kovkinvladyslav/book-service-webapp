@@ -1,11 +1,8 @@
-package com.epam.rd.autocode.spring.project.conf;
+package com.epam.rd.autocode.spring.project.security;
 
-import com.epam.rd.autocode.spring.project.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,18 +25,15 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/register").anonymous()
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()
 
-                        .requestMatchers("/books").permitAll()
-                        .requestMatchers("/books/**").permitAll()
-
                         .requestMatchers("/books/manage/**").hasRole("EMPLOYEE")
                         .requestMatchers("/books/*/edit").hasRole("EMPLOYEE")
                         .requestMatchers("/books/*/delete").hasRole("EMPLOYEE")
 
+                        .requestMatchers("/books/**").permitAll()
+                        .requestMatchers("/books").permitAll()
+
                         .requestMatchers("/orders/**").hasAnyRole("CLIENT", "EMPLOYEE")
-
                         .requestMatchers("/client/**").hasRole("CLIENT")
-
-
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -55,8 +49,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling(ex -> ex
-                        .accessDeniedHandler((req, res, ex1) ->
-                                res.sendRedirect("/"))
+                        .accessDeniedHandler((req, res, ex1) -> res.sendRedirect("/"))
                 )
                 .userDetailsService(userDetailsService);
 
