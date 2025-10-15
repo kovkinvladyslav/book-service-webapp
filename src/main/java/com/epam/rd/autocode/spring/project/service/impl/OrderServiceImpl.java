@@ -210,4 +210,10 @@ public class OrderServiceImpl implements OrderService{
         orderRepository.save(order);
     }
 
+    @Override
+    public List<OrderDTO> getAllOrders() {
+        return orderMapper.toDtoList(orderRepository.findAll());
+    }
+
+
 }

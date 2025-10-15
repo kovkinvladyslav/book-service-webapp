@@ -1,5 +1,5 @@
 INSERT INTO EMPLOYEES (BIRTH_DATE, EMAIL, NAME, PASSWORD, PHONE)
-VALUES ('1990-05-15', 'john.doe@email.com', 'John Doe', 'pass123', '555-123-4567'),
+    VALUES ('1990-05-15', 'john.doe@email.com', 'John Doe', 'pass123', '555-123-4567'),
        ('1985-09-20', 'jane.smith@email.com', 'Jane Smith', 'abc456', '555-987-6543'),
        ('1978-03-08', 'bob.jones@email.com', 'Bob Jones', 'qwerty789', '555-321-6789'),
        ('1982-11-25', 'alice.white@email.com', 'Alice White', 'secret567', '555-876-5432'),

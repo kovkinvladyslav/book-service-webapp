@@ -32,4 +32,5 @@ public interface BookService {
 
     Book getEntityByName(String name);
 
+    void restoreBook(String name);
 }

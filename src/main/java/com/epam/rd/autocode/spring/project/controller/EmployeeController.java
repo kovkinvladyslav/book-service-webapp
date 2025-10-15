@@ -30,20 +30,17 @@ public class EmployeeController {
 
         return "employee/manage-orders";
     }
-
     @PostMapping("/accept/{id}")
     public String acceptOrder(@PathVariable Long id, Authentication auth) {
         orderService.assignOrderToEmployee(id, auth.getName());
-
-        return "redirect:/orders/manage-orders";
+        return "redirect:/employee/orders";
     }
 
     @PostMapping("/complete/{id}")
     public String completeOrder(@PathVariable Long id) {
         orderService.markOrderAsCompleted(id);
-        return "redirect:/orders/manage-orders";
+        return "redirect:/employee/orders";
     }
-
 
     @GetMapping("/profile")
     public String profile(Model model, Authentication auth) {

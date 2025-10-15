@@ -12,12 +12,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -109,5 +109,13 @@ public class BookController {
     public String deleteBook(@PathVariable String name) {
         bookService.deleteBookByName(name);
         return "redirect:/books";
+    }
+
+
+    @PostMapping("/books/{name}/restore")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public String restoreBook(@PathVariable String name) {
+        bookService.restoreBook(name);
+        return "redirect:/books/manage";
     }
 }

@@ -14,12 +14,29 @@
         <!-- Always visible -->
         <li><a href="/books" class="navbar-link">Books</a></li>
 
-        <!-- GUEST -->
-        <li sec:authorize="!isAuthenticated()">
-            <a href="/login" class="navbar-link">Login</a>
+        <!-- ADMIN LINKS -->
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/dashboard}" class="navbar-link">Dashboard</a>
         </li>
-        <li sec:authorize="!isAuthenticated()">
-            <a href="/register" class="navbar-link navbar-link-register">Register</a>
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/employees}" class="navbar-link">Employees</a>
+        </li>
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/orders}" class="navbar-link">All Orders</a>
+        </li>
+        <li sec:authorize="hasRole('ADMIN')">
+            <a href="/books/manage/add" class="navbar-link">Add Book</a>
+        </li>
+
+        <!-- EMPLOYEE (but not ADMIN to avoid duplicates) -->
+        <li sec:authorize="hasRole('EMPLOYEE') and !hasRole('ADMIN')">
+            <a href="/books/manage/add" class="navbar-link">Add Book</a>
+        </li>
+        <li sec:authorize="hasRole('EMPLOYEE') and !hasRole('ADMIN')">
+            <a href="/employee/orders" class="navbar-link">Manage Orders</a>
+        </li>
+        <li sec:authorize="hasRole('EMPLOYEE') and !hasRole('ADMIN')">
+            <a href="/employee/profile" class="navbar-link">Profile</a>
         </li>
 
         <!-- CLIENT -->
@@ -33,22 +50,19 @@
             <a href="/client/profile" class="navbar-link">Profile</a>
         </li>
 
-        <!-- EMPLOYEE -->
-        <li sec:authorize="hasRole('EMPLOYEE')">
-            <a href="/books/manage/add" class="navbar-link">Add Book</a>
+        <!-- GUEST -->
+        <li sec:authorize="!isAuthenticated()">
+            <a href="/login" class="navbar-link">Login</a>
         </li>
-        <li sec:authorize="hasRole('EMPLOYEE')">
-            <a href="/employee/orders" class="navbar-link">Manage Orders</a>
-        </li>
-        <li sec:authorize="hasRole('EMPLOYEE')">
-            <a href="/employee/profile" class="navbar-link">Profile</a>
+        <li sec:authorize="!isAuthenticated()">
+            <a href="/register" class="navbar-link navbar-link-register">Register</a>
         </li>
 
-        <!-- Authenticated user -->
+        <!-- Authenticated user - logout -->
         <li sec:authorize="isAuthenticated()" class="navbar-user">
             <span class="navbar-email" sec:authentication="name"></span>
-
             <form th:action="@{/logout}" method="post" style="display:inline;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <button type="submit" class="navbar-link navbar-link-logout">Logout</button>
             </form>
         </li>

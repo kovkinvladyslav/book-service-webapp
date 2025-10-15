@@ -54,6 +54,24 @@
         </div>
     </div>
 
+    <!-- ADMIN -->
+    <div class="index-card" sec:authorize="hasRole('ADMIN')">
+        <h1 th:text="'Welcome back, ' + ${displayName} + '!'">Welcome back!</h1>
+        <span class="role-badge role-admin">Admin</span>
+        <p class="subtitle">Quick access to administration tools</p>
+
+        <div class="index-button-group">
+            <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
+            <a th:href="@{/admin/dashboard}" class="btn btn-secondary">Dashboard</a>
+            <a th:href="@{/admin/employees}" class="btn btn-secondary">Manage Employees</a>
+            <a th:href="@{/admin/orders}" class="btn btn-secondary">View All Orders</a>
+
+            <form th:action="@{/logout}" method="post" style="width:100%; margin-top:10px;">
+                <button type="submit" class="btn btn-danger" style="width:100%;">Logout</button>
+            </form>
+        </div>
+    </div>
+
 </div>
 </body>
 </html>

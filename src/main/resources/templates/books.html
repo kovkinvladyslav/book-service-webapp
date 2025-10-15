@@ -5,6 +5,46 @@
     <meta charset="UTF-8">
     <title>Books - BookStore</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
+    <style>
+        /* Стилі для видалених книг (тільки для Employee) */
+        .book-card.deleted-book {
+            opacity: 0.6;
+            border: 2px dashed #dc3545;
+            position: relative;
+        }
+
+        .deleted-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #dc3545;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .restore-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #28a745;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        .restore-button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
 
@@ -129,18 +169,69 @@
 
     <div th:if="${books.content.size() > 0}">
         <div class="book-grid">
-            <a th:each="book : ${books.content}"
-               th:href="@{'/books/' + ${book.name}}"
-               class="book-card">
-                <div class="book-title" th:text="${book.name}">Book Title</div>
-                <div class="book-author" th:text="'by ' + ${book.author}">by Author</div>
-                <div class="book-meta">
-                    <span class="meta-tag" th:text="${book.genre}">Genre</span>
-                    <span class="meta-tag" th:text="${book.pages} + ' pages'">Pages</span>
+            <!-- For CLIENT: show only non-deleted books -->
+            <th:block sec:authorize="hasRole('CLIENT')">
+                <a th:each="book : ${books.content}"
+                   th:if="!${book.deleted}"
+                   th:href="@{'/books/' + ${book.name}}"
+                   class="book-card">
+                    <div class="book-title" th:text="${book.name}">Book Title</div>
+                    <div class="book-author" th:text="'by ' + ${book.author}">by Author</div>
+                    <div class="book-meta">
+                        <span class="meta-tag" th:text="${book.genre}">Genre</span>
+                        <span class="meta-tag" th:text="${book.pages} + ' pages'">Pages</span>
+                    </div>
+                    <div class="book-price" th:text="'$' + ${#numbers.formatDecimal(book.price, 1, 2)}">$0.00</div>
+                    <div class="book-description" th:text="${book.description}">Description...</div>
+                </a>
+            </th:block>
+
+            <!-- For EMPLOYEE: show all books, mark deleted ones -->
+            <th:block sec:authorize="hasRole('EMPLOYEE')">
+                <div th:each="book : ${books.content}"
+                     class="book-card"
+                     th:classappend="${book.deleted} ? 'deleted-book' : ''">
+
+                    <span th:if="${book.deleted}" class="deleted-badge">DELETED</span>
+
+                    <a th:href="@{'/books/' + ${book.name}}" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="book-title" th:text="${book.name}">Book Title</div>
+                        <div class="book-author" th:text="'by ' + ${book.author}">by Author</div>
+                        <div class="book-meta">
+                            <span class="meta-tag" th:text="${book.genre}">Genre</span>
+                            <span class="meta-tag" th:text="${book.pages} + ' pages'">Pages</span>
+                        </div>
+                        <div class="book-price" th:text="'$' + ${#numbers.formatDecimal(book.price, 1, 2)}">$0.00</div>
+                        <div class="book-description" th:text="${book.description}">Description...</div>
+                    </a>
+
+                    <form th:if="${book.deleted}"
+                          th:action="@{'/books/' + ${book.name} + '/restore'}"
+                          method="post"
+                          style="display: inline;"
+                          onclick="event.stopPropagation();">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="restore-button">Restore</button>
+                    </form>
                 </div>
-                <div class="book-price" th:text="'$' + ${#numbers.formatDecimal(book.price, 1, 2)}">$0.00</div>
-                <div class="book-description" th:text="${book.description}">Description...</div>
-            </a>
+            </th:block>
+
+            <!-- For ANONYMOUS: show only non-deleted books -->
+            <th:block sec:authorize="isAnonymous()">
+                <a th:each="book : ${books.content}"
+                   th:if="!${book.deleted}"
+                   th:href="@{'/books/' + ${book.name}}"
+                   class="book-card">
+                    <div class="book-title" th:text="${book.name}">Book Title</div>
+                    <div class="book-author" th:text="'by ' + ${book.author}">by Author</div>
+                    <div class="book-meta">
+                        <span class="meta-tag" th:text="${book.genre}">Genre</span>
+                        <span class="meta-tag" th:text="${book.pages} + ' pages'">Pages</span>
+                    </div>
+                    <div class="book-price" th:text="'$' + ${#numbers.formatDecimal(book.price, 1, 2)}">$0.00</div>
+                    <div class="book-description" th:text="${book.description}">Description...</div>
+                </a>
+            </th:block>
         </div>
     </div>
 
@@ -154,7 +245,6 @@
         </button>
     </div>
 
-    <!-- SIMPLIFIED PAGINATION -->
     <div class="pagination" th:if="${books.totalPages > 1}">
         <!-- Previous Button -->
         <a th:href="@{/books(page=${books.number - 1}, size=${books.size}, sort=${param.sort}, genre=${param.genre}, language=${param.language}, ageGroup=${param.ageGroup}, minPrice=${param.minPrice}, maxPrice=${param.maxPrice}, searchQuery=${param.searchQuery})}"

@@ -1,5 +1,5 @@
 INSERT INTO CLIENTS (BALANCE, EMAIL, NAME, PASSWORD)
-VALUES (1000.00, 'client1@example.com', 'Medelyn Wright', 'password123'),
+    VALUES (1000.00, 'client1@example.com', 'Medelyn Wright', 'password123'),
        (1500.50, 'client2@example.com', 'Landon Phillips', 'securepass'),
        (800.75, 'client3@example.com', 'Harmony Mason', 'abc123'),
        (1200.25, 'client4@example.com', 'Archer Harper', 'pass456'),

@@ -28,4 +28,7 @@ public interface OrderService {
     List<OrderDTO> getOrdersByStatus(OrderStatus status);
 
     void cancelOrder(String clientEmail, Long orderId);
+
+    List<OrderDTO> getAllOrders();
+
 }

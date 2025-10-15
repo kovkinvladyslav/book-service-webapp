@@ -1,6 +1,7 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
 import com.epam.rd.autocode.spring.project.dto.ClientDTO;
+import com.epam.rd.autocode.spring.project.dto.ClientUpdateDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.exception.UserAlreadyExists;
@@ -67,13 +68,22 @@ public class ClientServiceImpl implements ClientService {
 
 
     @Override
-    public ClientDTO updateClientByEmail(String email, ClientDTO dto) {
+    @Transactional
+    public void updateClientByEmail(String email, ClientUpdateDTO dto) {
         Client existing = clientRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(CLIENT_NOT_FOUND + email));
 
-        clientMapper.updateEntity(dto, existing);
-        return clientMapper.toDto(clientRepository.save(existing));
+        existing.setName(dto.getName());
+
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            existing.setPassword(dto.getPassword());
+        }
+
+        clientRepository.save(existing);
     }
+
+
+
 
     @Override
     public void deleteClientByEmail(String email) {

@@ -22,18 +22,27 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        // Public routes
                         .requestMatchers("/login", "/register").anonymous()
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()
 
-                        .requestMatchers("/books/manage/**").hasRole("EMPLOYEE")
-                        .requestMatchers("/books/*/edit").hasRole("EMPLOYEE")
-                        .requestMatchers("/books/*/delete").hasRole("EMPLOYEE")
+                        // ADMIN routes (most specific first)
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        .requestMatchers("/books/manage/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/books/*/edit").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/books/*/delete").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/books/*/restore").hasAnyRole("EMPLOYEE", "ADMIN")
+
+                        .requestMatchers("/employee/**").hasAnyRole("EMPLOYEE", "ADMIN")
 
                         .requestMatchers("/books/**").permitAll()
                         .requestMatchers("/books").permitAll()
 
-                        .requestMatchers("/orders/**").hasAnyRole("CLIENT", "EMPLOYEE")
+                        .requestMatchers("/orders/**").hasAnyRole("CLIENT", "EMPLOYEE", "ADMIN")
+
                         .requestMatchers("/client/**").hasRole("CLIENT")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

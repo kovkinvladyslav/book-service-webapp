@@ -53,4 +53,6 @@ public class BookDTO {
 
     @NotNull(message = "Language is required")
     private Language language;
+
+    private boolean deleted;
 }

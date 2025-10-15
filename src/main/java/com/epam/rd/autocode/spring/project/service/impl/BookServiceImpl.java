@@ -16,8 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +33,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDTO> getAllBooks() {
-        return bookMapper.toDtoList(bookRepository.findAll());
+        return bookMapper.toDtoList(bookRepository.findAll().stream().filter(book -> !book.isDeleted()).toList());
     }
 
     @Override
@@ -68,6 +66,14 @@ public class BookServiceImpl implements BookService {
     public Book getEntityByName(String name) {
         return bookRepository.findByName(name)
                 .orElseThrow(() -> new NotFoundException("Book not found: " + name));
+    }
+
+    @Override
+    public void restoreBook(String name) {
+        Book book = bookRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("Book not found: " + name));
+        book.setDeleted(false);
+        bookRepository.save(book);
     }
 
 
