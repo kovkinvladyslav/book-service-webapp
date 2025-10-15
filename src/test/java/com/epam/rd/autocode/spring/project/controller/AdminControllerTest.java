@@ -7,7 +7,6 @@ import com.epam.rd.autocode.spring.project.service.EmployeeService;
 import com.epam.rd.autocode.spring.project.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
@@ -66,6 +65,27 @@ class AdminControllerTest {
         assertThat(view).isEqualTo("admin/employees");
         assertThat(model.getAttribute("employees")).isInstanceOf(List.class);
     }
+
+    @Test
+    void updateEmployee_withNullPassword_usesExistingPassword_redirects() {
+        EmployeeDTO incoming = new EmployeeDTO();
+        incoming.setPassword(null);
+
+        EmployeeDTO existing = new EmployeeDTO();
+        existing.setPassword("EXISTING_HASH");
+
+        BindingResult br = mock(BindingResult.class);
+        when(br.hasErrors()).thenReturn(false);
+        when(employeeService.getEmployeeByEmail("e@x")).thenReturn(existing);
+
+        String view = controller.updateEmployee("e@x", incoming, br);
+
+        assertThat(view).isEqualTo("redirect:/admin/employees");
+        assertThat(incoming.getPassword()).isEqualTo("EXISTING_HASH");
+        verify(employeeService).updateEmployeeByEmail("e@x", incoming);
+        verifyNoInteractions(passwordEncoder);
+    }
+
 
     @Test
     void showAddEmployeeForm_initializesDto_andReturnsView() {

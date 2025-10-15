@@ -47,6 +47,23 @@ class ClientServiceImplTest {
     }
 
     @Test
+    void updateClientByEmail_nullPassword_keepsExisting_andSaves() {
+        Client existing = new Client();
+        existing.setPassword("oldHash");
+        when(clientRepository.findByEmail("e")).thenReturn(java.util.Optional.of(existing));
+
+        ClientUpdateDTO dto = new ClientUpdateDTO();
+        dto.setName("New Name");
+        dto.setPassword(null);
+        service.updateClientByEmail("e", dto);
+
+        assertThat(existing.getName()).isEqualTo("New Name");
+        assertThat(existing.getPassword()).isEqualTo("oldHash");
+        verify(clientRepository).save(existing);
+    }
+
+
+    @Test
     void getClientByEmail_notFound_throws() {
         when(clientRepository.findByEmail("e")).thenReturn(Optional.empty());
         assertThatThrownBy(() -> service.getClientByEmail("e")).isInstanceOf(NotFoundException.class);

@@ -7,10 +7,8 @@ import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
 import com.epam.rd.autocode.spring.project.model.Book;
 import com.epam.rd.autocode.spring.project.repository.BookRepository;
-import com.epam.rd.autocode.spring.project.service.impl.BookServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -59,6 +57,21 @@ class BookServiceImplTest {
         Page<BookDTO> out = service.searchBookWithPaginationSortingAndFiltering(filter, pageable, "q");
         assertThat(out.getContent()).containsExactly(d);
     }
+
+    @Test
+    void addBook_whenNameAlreadyExists_throwsAlreadyExist_andDoesNotSave() {
+        BookDTO dto = new BookDTO();
+        dto.setName("N"); // важливо: не null
+
+        when(bookRepository.findByName("N")).thenReturn(java.util.Optional.of(new Book()));
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.addBook(dto))
+                .isInstanceOf(AlreadyExistException.class);
+
+        verify(bookRepository, never()).save(any());
+        verify(bookMapper, never()).toEntity(any());
+    }
+
 
     @Test
     void getBooksGenres_returnsRepo() {

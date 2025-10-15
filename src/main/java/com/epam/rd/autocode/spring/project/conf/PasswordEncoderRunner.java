@@ -6,6 +6,7 @@ import com.epam.rd.autocode.spring.project.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Component
+@Profile("test")
 @RequiredArgsConstructor
 @Slf4j
 public class PasswordEncoderRunner implements CommandLineRunner {

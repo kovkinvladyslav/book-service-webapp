@@ -82,6 +82,33 @@ class OrderServiceImplTest {
     }
 
     @Test
+    void addBookToOrder_whenDraftHasNullItems_initializesList_addsItem_andSaves() {
+        Order draft = new Order();
+        draft.setOrderStatus(OrderStatus.DRAFT);
+        draft.setBookItems(null);
+
+        when(orderRepository.findByClientEmailAndOrderStatus("c", OrderStatus.DRAFT))
+                .thenReturn(java.util.Optional.of(draft));
+
+        Book book = new Book();
+        book.setName("B");
+        book.setPrice(new BigDecimal("7"));
+        when(bookService.getEntityByName("B")).thenReturn(book);
+
+        when(orderRepository.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        service.addBookToOrder("B", "c");
+
+        assertThat(draft.getBookItems()).isNotNull();
+        assertThat(draft.getBookItems()).hasSize(1);
+        BookItem bi = draft.getBookItems().get(0);
+        assertThat(bi.getBook()).isSameAs(book);
+        assertThat(bi.getQuantity()).isEqualTo(1);
+        verify(orderRepository, atLeastOnce()).save(draft);
+    }
+
+
+    @Test
     void addBookToOrder_whenDraftNotExists_createsAndAddsNewItem() {
         when(orderRepository.findByClientEmailAndOrderStatus("c", OrderStatus.DRAFT)).thenReturn(Optional.empty());
         Client client = new Client(); client.setEmail("c");

@@ -11,10 +11,8 @@
     </a>
 
     <ul class="navbar-menu">
-        <!-- Always visible -->
         <li><a href="/books" class="navbar-link">Books</a></li>
 
-        <!-- ADMIN LINKS -->
         <li sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/admin/dashboard}" class="navbar-link">Dashboard</a>
         </li>
@@ -28,7 +26,6 @@
             <a href="/books/manage/add" class="navbar-link">Add Book</a>
         </li>
 
-        <!-- EMPLOYEE (but not ADMIN to avoid duplicates) -->
         <li sec:authorize="hasRole('EMPLOYEE') and !hasRole('ADMIN')">
             <a href="/books/manage/add" class="navbar-link">Add Book</a>
         </li>
@@ -39,7 +36,6 @@
             <a href="/employee/profile" class="navbar-link">Profile</a>
         </li>
 
-        <!-- CLIENT -->
         <li sec:authorize="hasRole('CLIENT')">
             <a href="/orders/cart" class="navbar-link">My Cart</a>
         </li>
@@ -50,7 +46,6 @@
             <a href="/client/profile" class="navbar-link">Profile</a>
         </li>
 
-        <!-- GUEST -->
         <li sec:authorize="!isAuthenticated()">
             <a href="/login" class="navbar-link">Login</a>
         </li>
@@ -58,7 +53,6 @@
             <a href="/register" class="navbar-link navbar-link-register">Register</a>
         </li>
 
-        <!-- Authenticated user - logout -->
         <li sec:authorize="isAuthenticated()" class="navbar-user">
             <span class="navbar-email" sec:authentication="name"></span>
             <form th:action="@{/logout}" method="post" style="display:inline;">

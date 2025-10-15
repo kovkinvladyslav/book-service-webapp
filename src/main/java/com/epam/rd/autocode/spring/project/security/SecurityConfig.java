@@ -22,11 +22,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Public routes
                         .requestMatchers("/login", "/register").anonymous()
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()
 
-                        // ADMIN routes (most specific first)
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         .requestMatchers("/books/manage/**").hasAnyRole("EMPLOYEE", "ADMIN")
