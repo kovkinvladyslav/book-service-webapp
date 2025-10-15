@@ -49,9 +49,6 @@
     <logger name="com.epam.rd.autocode.spring.project" level="INFO"/>
 
     <springProfile name="dev">
-        <logger name="org.hibernate.SQL" level="WARN"/>
-        <logger name="org.springframework" level="INFO"/>
-        <logger name="com.epam.rd.autocode.spring.project" level="DEBUG"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE_DEV"/>
             <appender-ref ref="FILE_DEV"/>
@@ -59,9 +56,6 @@
     </springProfile>
 
     <springProfile name="test">
-        <logger name="org.hibernate.SQL" level="ERROR"/>
-        <logger name="org.springframework" level="WARN"/>
-        <logger name="com.epam.rd.autocode.spring.project" level="INFO"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE_TEST"/>
             <appender-ref ref="FILE_TEST"/>
