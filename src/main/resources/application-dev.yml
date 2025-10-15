@@ -16,7 +16,6 @@ spring:
     properties:
       hibernate:
         format_sql: false
-
   sql:
     init:
       mode: never
@@ -25,4 +24,5 @@ logging:
   level:
     com.epam.rd.autocode.spring.project: DEBUG
     org.springframework: INFO
-    org.hibernate.SQL: WARN
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

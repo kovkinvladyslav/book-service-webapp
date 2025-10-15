@@ -6,13 +6,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile({"dev", "test"})
 @RequiredArgsConstructor
 @Slf4j
-public class TestAdminSeeder implements CommandLineRunner {
+public class AdminSeeder implements CommandLineRunner {
 
     private final EmployeeRepository employees;
     private final PasswordEncoder encoder;
@@ -29,14 +31,17 @@ public class TestAdminSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
         employees.findByEmail(adminEmail).ifPresentOrElse(
-                e -> log.info("TEST: admin already exists: {}", adminEmail),
+                existing -> {
+                    existing.setName(adminName);
+                    existing.setPassword(encoder.encode(adminPasswordPlain));
+                    employees.save(existing);
+                },
                 () -> {
                     Employee admin = new Employee();
                     admin.setEmail(adminEmail);
                     admin.setName(adminName);
                     admin.setPassword(encoder.encode(adminPasswordPlain));
                     employees.save(admin);
-                    log.warn("TEST ADMIN READY email={} password={}", adminEmail, adminPasswordPlain);
                 }
         );
     }
