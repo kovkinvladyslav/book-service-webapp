@@ -1,10 +1,10 @@
 server:
-  port: 8084
+  port: ${SERVER_PORT:8084}
 
 spring:
 
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
   thymeleaf:
     prefix: classpath:/templates/

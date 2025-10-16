@@ -25,19 +25,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Value("${admin.email}")
     private String adminEmail;
 
-    @Value("${admin.password}")
-    private String adminPassword;
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        if (email.equals(adminEmail)) {
-            return User.builder()
-                    .username(adminEmail)
-                    .password(adminPassword)
-                    .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")))
-                    .build();
-        }
 
         return clientRepository.findByEmail(email)
                 .map(client -> User.builder()
@@ -46,11 +35,17 @@ public class CustomUserDetailsService implements UserDetailsService {
                         .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENT")))
                         .build())
                 .or(() -> employeeRepository.findByEmail(email)
-                        .map(employee -> User.builder()
-                                .username(employee.getEmail())
-                                .password(employee.getPassword())
-                                .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_EMPLOYEE")))
-                                .build()))
+                        .map(employee -> {
+                            String role = email.equals(adminEmail)
+                                    ? "ROLE_ADMIN"
+                                    : "ROLE_EMPLOYEE";
+
+                            return User.builder()
+                                    .username(employee.getEmail())
+                                    .password(employee.getPassword())
+                                    .authorities(Collections.singletonList(new SimpleGrantedAuthority(role)))
+                                    .build();
+                        }))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
     }
 }
