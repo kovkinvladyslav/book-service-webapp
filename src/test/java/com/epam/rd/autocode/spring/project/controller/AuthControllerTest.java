@@ -1,6 +1,7 @@
 package com.epam.rd.autocode.spring.project.controller;
 
 import com.epam.rd.autocode.spring.project.dto.ClientDTO;
+import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
 import com.epam.rd.autocode.spring.project.service.ClientService;
 import com.epam.rd.autocode.spring.project.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -144,21 +145,87 @@ class AuthControllerTest {
         assertThat(model.getAttribute("displayName")).isEqualTo("Client Name");
     }
 
+
     @Test
     void index_roleEmployee_setsEmployeeName() {
+        // Arrange
+        String email = "employee@example.com";
+        EmployeeDTO empDto = new EmployeeDTO();
+        empDto.setName("John Employee");
+
+        when(employeeService.getEmployeeByEmail(email)).thenReturn(empDto);
+
+       TestingAuthenticationToken auth = new TestingAuthenticationToken(
+                email,
+                "password",
+                List.of(new SimpleGrantedAuthority("ROLE_EMPLOYEE"))
+        );
+
+        Model model = new ExtendedModelMap();
+
+        String view = controller.index(auth, model);
+
+        assertThat(view).isEqualTo("index");
+        assertThat(model.getAttribute("displayName")).isEqualTo("John Employee");
+
+        verify(employeeService, times(1)).getEmployeeByEmail(email);
+        verify(clientService, never()).getClientByEmail(anyString());
+    }
+
+    @Test
+    void loginPage_onlyError_setsError() {
+        Model model = new ExtendedModelMap();
+        String view = controller.loginPage("1", null, null, model);
+        assertThat(view).isEqualTo("login");
+        assertThat(model.getAttribute("error")).isEqualTo("Invalid email or password");
+        assertThat(model.getAttribute("success")).isNull();
+        assertThat(model.getAttribute("info")).isNull();
+    }
+
+
+    @Test
+    void loginPage_onlyRegistered_setsSuccess() {
+        Model model = new ExtendedModelMap();
+        String view = controller.loginPage(null, "1", null, model);
+        assertThat(view).isEqualTo("login");
+        assertThat(model.getAttribute("error")).isNull();
+        assertThat(model.getAttribute("success")).isEqualTo("Registration successful! Please login.");
+        assertThat(model.getAttribute("info")).isNull();
+    }
+
+    @Test
+    void loginPage_onlyLogout_setsInfo() {
+        Model model = new ExtendedModelMap();
+        String view = controller.loginPage(null, null, "1", model);
+        assertThat(view).isEqualTo("login");
+        assertThat(model.getAttribute("error")).isNull();
+        assertThat(model.getAttribute("success")).isNull();
+        assertThat(model.getAttribute("info")).isEqualTo("You have been logged out successfully.");
+    }
+
+
+    @Test
+    void index_roleEmployee_setsEmployeeName_properly() {
         String email = "emp@ex.com";
-        var empDto = new com.epam.rd.autocode.spring.project.dto.EmployeeDTO();
+        EmployeeDTO empDto = new EmployeeDTO();
         empDto.setName("Emp Name");
+
         when(employeeService.getEmployeeByEmail(email)).thenReturn(empDto);
 
         TestingAuthenticationToken auth =
-                new TestingAuthenticationToken(email, "x",
+                new TestingAuthenticationToken(email, "password",
                         List.of(new SimpleGrantedAuthority("ROLE_EMPLOYEE")));
 
         Model model = new ExtendedModelMap();
+
         String view = controller.index(auth, model);
 
         assertThat(view).isEqualTo("index");
         assertThat(model.getAttribute("displayName")).isEqualTo("Emp Name");
+
+        verify(employeeService).getEmployeeByEmail(email);
     }
+
+
+
 }
