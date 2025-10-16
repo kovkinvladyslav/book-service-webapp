@@ -48,6 +48,7 @@ public class PaymentServiceImpl implements PaymentService {
         clientRepository.save(client);
     }
 
+    @Transactional
     @Override
     public boolean processPayment(String clientEmail, BigDecimal amount) {
         try {

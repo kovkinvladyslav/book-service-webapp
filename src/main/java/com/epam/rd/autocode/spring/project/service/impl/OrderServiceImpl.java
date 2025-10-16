@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.mapper.GenericMapper;
 import com.epam.rd.autocode.spring.project.model.*;
@@ -14,10 +13,8 @@ import com.epam.rd.autocode.spring.project.model.enums.OrderStatus;
 import com.epam.rd.autocode.spring.project.repository.ClientRepository;
 import com.epam.rd.autocode.spring.project.repository.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.service.BookService;
-import com.epam.rd.autocode.spring.project.service.EmployeeService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
 import com.epam.rd.autocode.spring.project.dto.OrderDTO;
 import com.epam.rd.autocode.spring.project.repository.OrderRepository;
 import com.epam.rd.autocode.spring.project.service.OrderService;
@@ -50,6 +47,7 @@ public class OrderServiceImpl implements OrderService{
         return orderMapper.toDto(orderRepository.save(order));
     }
 
+    @Transactional
     @Override
     public void addBookToOrder(String bookName, String clientEmail) {
         Order draftOrder = orderRepository
@@ -92,8 +90,8 @@ public class OrderServiceImpl implements OrderService{
         orderRepository.save(draftOrder);
     }
 
-
     @Override
+    @Transactional
     public void removeBookFromOrder(String bookName, String clientEmail) {
         Order draftOrder = orderRepository
                 .findByClientEmailAndOrderStatus(clientEmail, OrderStatus.DRAFT)
@@ -117,6 +115,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @Transactional
     public void placeOrder(String clientEmail) {
         Order draft = orderRepository.findByClientEmailAndOrderStatus(clientEmail, OrderStatus.DRAFT)
                 .orElseThrow(() -> new NotFoundException("No draft order for " + clientEmail));
@@ -183,6 +182,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @Transactional
     public List<OrderDTO> getOrdersByStatus(OrderStatus status) {
         return orderMapper.toDtoList(orderRepository.findByOrderStatus(status));
     }
@@ -211,6 +211,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @Transactional
     public List<OrderDTO> getAllOrders() {
         return orderMapper.toDtoList(orderRepository.findAll());
     }
