@@ -16,4 +16,8 @@ public class ClientUpdateDTO {
 
     @Email
     private String email;
+
+    public void setPassword(String password) {
+        this.password = (password == null || password.isBlank()) ? null : password;
+    }
 }
