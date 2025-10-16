@@ -8,6 +8,8 @@ import com.epam.rd.autocode.spring.project.model.Employee;
 import com.epam.rd.autocode.spring.project.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.*;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,90 +19,163 @@ import static org.mockito.Mockito.*;
 
 class EmployeeServiceImplTest {
 
-    private EmployeeRepository repo;
-    private GenericMapper<Employee, EmployeeDTO> mapper;
-    private EmployeeServiceImpl service;
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
+    private GenericMapper<Employee, EmployeeDTO> employeeMapper;
+
+    @InjectMocks
+    private EmployeeServiceImpl employeeService;
+
+    private final String adminEmail = "admin@example.com";
 
     @BeforeEach
     void setUp() {
-        repo = mock(EmployeeRepository.class);
-        mapper = mock(GenericMapper.class);
-        service = new EmployeeServiceImpl(repo, mapper);
+        MockitoAnnotations.openMocks(this);
+        ReflectionTestUtils.setField(employeeService, "adminEmail", adminEmail);
     }
 
     @Test
-    void getAllEmployees_mapsList() {
-        when(repo.findAll()).thenReturn(List.of(new Employee()));
-        when(mapper.toDtoList(anyList())).thenReturn(List.of(new EmployeeDTO()));
-        assertThat(service.getAllEmployees()).hasSize(1);
-    }
-
-    @Test
-    void getEmployeeByEmail_found_maps() {
-        Employee e = new Employee();
-        EmployeeDTO d = new EmployeeDTO();
-        when(repo.findByEmail("e")).thenReturn(Optional.of(e));
-        when(mapper.toDto(e)).thenReturn(d);
-        assertThat(service.getEmployeeByEmail("e")).isSameAs(d);
-    }
-
-    @Test
-    void getEmployeeByEmail_notFound_throws() {
-        when(repo.findByEmail("x")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> service.getEmployeeByEmail("x")).isInstanceOf(NotFoundException.class);
-    }
-
-    @Test
-    void addEmployee_exists_throws() {
-        EmployeeDTO dto = new EmployeeDTO(); dto.setEmail("e");
-        when(repo.findByEmail("e")).thenReturn(Optional.of(new Employee()));
-        assertThatThrownBy(() -> service.addEmployee(dto)).isInstanceOf(AlreadyExistException.class);
-    }
-
-    @Test
-    void addEmployee_saves_andMaps() {
-        EmployeeDTO dto = new EmployeeDTO(); dto.setEmail("e");
-        Employee ent = new Employee();
-        Employee saved = new Employee();
-        EmployeeDTO mapped = new EmployeeDTO();
-        when(repo.findByEmail("e")).thenReturn(Optional.empty());
-        when(mapper.toEntity(dto)).thenReturn(ent);
-        when(repo.save(ent)).thenReturn(saved);
-        when(mapper.toDto(saved)).thenReturn(mapped);
-        assertThat(service.addEmployee(dto)).isSameAs(mapped);
-    }
-
-    @Test
-    void updateEmployeeByEmail_notFound_throws() {
-        when(repo.findByEmail("e")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> service.updateEmployeeByEmail("e", new EmployeeDTO())).isInstanceOf(NotFoundException.class);
-    }
-
-    @Test
-    void updateEmployeeByEmail_updates_andMaps() {
-        Employee existing = new Employee();
-        Employee saved = new Employee();
+    void getAllEmployees_filtersOutAdmin() {
+        Employee admin = new Employee();
+        admin.setEmail(adminEmail);
+        Employee e1 = new Employee();
+        e1.setEmail("user1@example.com");
         EmployeeDTO dto = new EmployeeDTO();
-        EmployeeDTO mapped = new EmployeeDTO();
-        when(repo.findByEmail("e")).thenReturn(Optional.of(existing));
-        when(repo.save(existing)).thenReturn(saved);
-        when(mapper.toDto(saved)).thenReturn(mapped);
 
-        assertThat(service.updateEmployeeByEmail("e", dto)).isSameAs(mapped);
-        verify(mapper).updateEntity(dto, existing);
+        when(employeeRepository.findAll()).thenReturn(List.of(admin, e1));
+        when(employeeMapper.toDto(e1)).thenReturn(dto);
+
+        List<EmployeeDTO> result = employeeService.getAllEmployees();
+
+        assertThat(result).containsExactly(dto);
+        verify(employeeRepository).findAll();
     }
 
     @Test
-    void deleteEmployeeByEmail_notFound_throws() {
-        when(repo.findByEmail("e")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> service.deleteEmployeeByEmail("e")).isInstanceOf(NotFoundException.class);
-    }
-
-    @Test
-    void deleteEmployeeByEmail_deletes() {
+    void getEmployeeByEmail_returnsDto() {
         Employee e = new Employee();
-        when(repo.findByEmail("e")).thenReturn(Optional.of(e));
-        service.deleteEmployeeByEmail("e");
-        verify(repo).delete(e);
+        e.setEmail("user@example.com");
+        EmployeeDTO dto = new EmployeeDTO();
+
+        when(employeeRepository.findByEmail("user@example.com")).thenReturn(Optional.of(e));
+        when(employeeMapper.toDto(e)).thenReturn(dto);
+
+        EmployeeDTO result = employeeService.getEmployeeByEmail("user@example.com");
+
+        assertThat(result).isEqualTo(dto);
+        verify(employeeRepository).findByEmail("user@example.com");
+    }
+
+    @Test
+    void getEmployeeByEmail_throwsIfAdmin() {
+        assertThatThrownBy(() -> employeeService.getEmployeeByEmail(adminEmail))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Admin account cannot be modified or deleted");
+    }
+
+    @Test
+    void getEmployeeByEmail_throwsIfNotFound() {
+        when(employeeRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> employeeService.getEmployeeByEmail("missing@example.com"))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("Employee not found with email: missing@example.com");
+    }
+
+    @Test
+    void addEmployee_savesAndReturnsDto() {
+        EmployeeDTO dto = new EmployeeDTO();
+        dto.setEmail("new@example.com");
+        Employee e = new Employee();
+
+        when(employeeRepository.findByEmail("new@example.com")).thenReturn(Optional.empty());
+        when(employeeMapper.toEntity(dto)).thenReturn(e);
+        when(employeeRepository.save(e)).thenReturn(e);
+        when(employeeMapper.toDto(e)).thenReturn(dto);
+
+        EmployeeDTO result = employeeService.addEmployee(dto);
+
+        assertThat(result).isEqualTo(dto);
+        verify(employeeRepository).save(e);
+    }
+
+    @Test
+    void addEmployee_throwsIfAdmin() {
+        EmployeeDTO dto = new EmployeeDTO();
+        dto.setEmail(adminEmail);
+
+        assertThatThrownBy(() -> employeeService.addEmployee(dto))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Cannot create admin account manually");
+    }
+
+    @Test
+    void addEmployee_throwsIfAlreadyExists() {
+        EmployeeDTO dto = new EmployeeDTO();
+        dto.setEmail("exists@example.com");
+        when(employeeRepository.findByEmail("exists@example.com")).thenReturn(Optional.of(new Employee()));
+
+        assertThatThrownBy(() -> employeeService.addEmployee(dto))
+                .isInstanceOf(AlreadyExistException.class)
+                .hasMessageContaining("Employee already exists: exists@example.com");
+    }
+
+    @Test
+    void updateEmployeeByEmail_updatesAndReturnsDto() {
+        Employee existing = new Employee();
+        EmployeeDTO dto = new EmployeeDTO();
+        when(employeeRepository.findByEmail("x@example.com")).thenReturn(Optional.of(existing));
+        when(employeeRepository.save(existing)).thenReturn(existing);
+        when(employeeMapper.toDto(existing)).thenReturn(dto);
+
+        EmployeeDTO result = employeeService.updateEmployeeByEmail("x@example.com", dto);
+
+        assertThat(result).isEqualTo(dto);
+        verify(employeeMapper).updateEntity(dto, existing);
+    }
+
+    @Test
+    void updateEmployeeByEmail_throwsIfAdmin() {
+        assertThatThrownBy(() -> employeeService.updateEmployeeByEmail(adminEmail, new EmployeeDTO()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Admin account cannot be modified or deleted");
+    }
+
+    @Test
+    void updateEmployeeByEmail_throwsIfNotFound() {
+        when(employeeRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> employeeService.updateEmployeeByEmail("missing@example.com", new EmployeeDTO()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("Employee not found with email: missing@example.com");
+    }
+
+
+    @Test
+    void deleteEmployeeByEmail_deletesExisting() {
+        Employee existing = new Employee();
+        when(employeeRepository.findByEmail("x@example.com")).thenReturn(Optional.of(existing));
+
+        employeeService.deleteEmployeeByEmail("x@example.com");
+
+        verify(employeeRepository).delete(existing);
+    }
+
+    @Test
+    void deleteEmployeeByEmail_throwsIfAdmin() {
+        assertThatThrownBy(() -> employeeService.deleteEmployeeByEmail(adminEmail))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Admin account cannot be modified or deleted");
+    }
+
+    @Test
+    void deleteEmployeeByEmail_throwsIfNotFound() {
+        when(employeeRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> employeeService.deleteEmployeeByEmail("missing@example.com"))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("Employee not found with email: missing@example.com");
     }
 }

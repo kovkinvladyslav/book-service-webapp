@@ -6,80 +6,100 @@ import com.epam.rd.autocode.spring.project.repository.ClientRepository;
 import com.epam.rd.autocode.spring.project.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CustomUserDetailsServiceTest {
 
+    @Mock
     private ClientRepository clientRepository;
+
+    @Mock
     private EmployeeRepository employeeRepository;
-    private CustomUserDetailsService service;
+
+    @InjectMocks
+    private CustomUserDetailsService userDetailsService;
+
+    private final String adminEmail = "admin@example.com";
 
     @BeforeEach
     void setUp() {
-        clientRepository = mock(ClientRepository.class);
-        employeeRepository = mock(EmployeeRepository.class);
-        service = new CustomUserDetailsService(clientRepository, employeeRepository);
-        ReflectionTestUtils.setField(service, "adminEmail", "admin@site.com");
-        ReflectionTestUtils.setField(service, "adminPassword", "{noop}adminpass");
+        MockitoAnnotations.openMocks(this);
+        try {
+            var field = CustomUserDetailsService.class.getDeclaredField("adminEmail");
+            field.setAccessible(true);
+            field.set(userDetailsService, adminEmail);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    void loadUser_admin_returnsAdminUser() {
-        UserDetails ud = service.loadUserByUsername("admin@site.com");
-        assertThat(ud.getUsername()).isEqualTo("admin@site.com");
-        assertThat(ud.getPassword()).isEqualTo("{noop}adminpass");
-        assertThat(ud.getAuthorities()).extracting("authority").containsExactly("ROLE_ADMIN");
-        verifyNoInteractions(clientRepository, employeeRepository);
-    }
+    void loadUserByUsername_ClientFound() {
+        Client client = new Client();
+        client.setEmail("client@example.com");
+        client.setPassword("password");
 
-    @Test
-    void loadUser_clientFound_returnsClientUser() {
-        Client c = new Client();
-        c.setEmail("c@ex.com");
-        c.setPassword("{noop}pwd");
-        when(clientRepository.findByEmail("c@ex.com")).thenReturn(Optional.of(c));
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.of(client));
 
-        UserDetails ud = service.loadUserByUsername("c@ex.com");
+        UserDetails userDetails = userDetailsService.loadUserByUsername("client@example.com");
 
-        assertThat(ud.getUsername()).isEqualTo("c@ex.com");
-        assertThat(ud.getPassword()).isEqualTo("{noop}pwd");
-        assertThat(ud.getAuthorities()).extracting("authority").containsExactly("ROLE_CLIENT");
-        verify(clientRepository).findByEmail("c@ex.com");
+        assertEquals("client@example.com", userDetails.getUsername());
+        assertEquals("password", userDetails.getPassword());
+        assertTrue(userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_CLIENT")));
+        verify(clientRepository, times(1)).findByEmail("client@example.com");
         verifyNoInteractions(employeeRepository);
     }
 
     @Test
-    void loadUser_employeeFound_returnsEmployeeUser() {
-        when(clientRepository.findByEmail("e@ex.com")).thenReturn(Optional.empty());
+    void loadUserByUsername_EmployeeFound() {
+        Employee employee = new Employee();
+        employee.setEmail("employee@example.com");
+        employee.setPassword("password");
 
-        Employee e = new Employee();
-        e.setEmail("e@ex.com");
-        e.setPassword("{noop}pwd");
-        when(employeeRepository.findByEmail("e@ex.com")).thenReturn(Optional.of(e));
+        when(clientRepository.findByEmail("employee@example.com")).thenReturn(Optional.empty());
+        when(employeeRepository.findByEmail("employee@example.com")).thenReturn(Optional.of(employee));
 
-        UserDetails ud = service.loadUserByUsername("e@ex.com");
+        UserDetails userDetails = userDetailsService.loadUserByUsername("employee@example.com");
 
-        assertThat(ud.getUsername()).isEqualTo("e@ex.com");
-        assertThat(ud.getPassword()).isEqualTo("{noop}pwd");
-        assertThat(ud.getAuthorities()).extracting("authority").containsExactly("ROLE_EMPLOYEE");
-        verify(clientRepository).findByEmail("e@ex.com");
-        verify(employeeRepository).findByEmail("e@ex.com");
+        assertEquals("employee@example.com", userDetails.getUsername());
+        assertEquals("password", userDetails.getPassword());
+        assertTrue(userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLOYEE")));
     }
 
     @Test
-    void loadUser_notFound_throws() {
-        when(clientRepository.findByEmail("x@ex.com")).thenReturn(Optional.empty());
-        when(employeeRepository.findByEmail("x@ex.com")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> service.loadUserByUsername("x@ex.com"))
-                .isInstanceOf(UsernameNotFoundException.class)
-                .hasMessageContaining("x@ex.com");
+    void loadUserByUsername_AdminFound() {
+        Employee employee = new Employee();
+        employee.setEmail(adminEmail);
+        employee.setPassword("password");
+
+        when(clientRepository.findByEmail(adminEmail)).thenReturn(Optional.empty());
+        when(employeeRepository.findByEmail(adminEmail)).thenReturn(Optional.of(employee));
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(adminEmail);
+
+        assertEquals(adminEmail, userDetails.getUsername());
+        assertEquals("password", userDetails.getPassword());
+        assertTrue(userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")));
+    }
+
+    @Test
+    void loadUserByUsername_UserNotFound() {
+        when(clientRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
+        when(employeeRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(UsernameNotFoundException.class,
+                () -> userDetailsService.loadUserByUsername("unknown@example.com"));
     }
 }

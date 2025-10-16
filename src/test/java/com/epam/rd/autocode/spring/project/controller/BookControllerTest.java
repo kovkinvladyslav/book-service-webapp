@@ -158,7 +158,7 @@ class BookControllerTest {
     @Test
     void restoreBook_callsService_andRedirects() {
         String view = controller.restoreBook("X");
-        assertThat(view).isEqualTo("redirect:/books/manage");
+        assertThat(view).isEqualTo("redirect:/books");
         verify(bookService).restoreBook("X");
     }
 }
