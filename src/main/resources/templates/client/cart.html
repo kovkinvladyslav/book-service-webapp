@@ -2,20 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>My Cart - BookStore</title>
+    <title th:text="#{cart.title}">My Cart - BookStore</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="content-wrapper">
-    <h1 class="page-title">My Cart</h1>
+    <h1 class="page-title" th:text="#{cart.title}">My Cart</h1>
 
     <!-- Empty cart -->
     <div th:if="${order == null or order.bookItems == null or order.bookItems.isEmpty()}" class="empty-state">
-        <h2>Your cart is empty</h2>
-        <p>Looks like you haven’t added anything yet.</p>
-        <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
+        <h2 th:text="#{cart.empty.title}">Your cart is empty</h2>
+        <p th:text="#{cart.empty.message}">Looks like you haven't added anything yet.</p>
+        <a th:href="@{/books}" class="btn btn-primary" th:text="#{cart.empty.button}">Browse Books</a>
     </div>
 
     <!-- Non-empty cart -->
@@ -23,12 +23,12 @@
         <table class="cart-table">
             <thead>
             <tr>
-                <th>Book</th>
-                <th>Author</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
-                <th style="text-align:center;">Actions</th>
+                <th th:text="#{cart.table.book}">Book</th>
+                <th th:text="#{cart.table.author}">Author</th>
+                <th th:text="#{cart.table.quantity}">Quantity</th>
+                <th th:text="#{cart.table.price}">Price</th>
+                <th th:text="#{cart.table.total}">Total</th>
+                <th style="text-align:center;" th:text="#{cart.table.actions}">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -54,14 +54,14 @@
 
         <div class="cart-summary">
             <div class="cart-total">
-                <span>Total:</span>
+                <span th:text="#{cart.summary.total}">Total:</span>
                 <strong th:text="'$' + ${#numbers.formatDecimal(order.price, 1, 2)}"></strong>
             </div>
             <div class="cart-buttons">
                 <form th:action="@{/orders/checkout}" method="post">
-                    <button type="submit" class="btn btn-primary">Place Order</button>
+                    <button type="submit" class="btn btn-primary" th:text="#{cart.button.checkout}">Place Order</button>
                 </form>
-                <a th:href="@{/books}" class="btn btn-secondary">Continue Shopping</a>
+                <a th:href="@{/books}" class="btn btn-secondary" th:text="#{cart.button.continue}">Continue Shopping</a>
             </div>
         </div>
     </div>

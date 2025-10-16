@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Employee</title>
+    <title th:text="#{employee.title.edit}">Edit Employee</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
         .form-container {
@@ -71,10 +71,11 @@
 
 <div class="content-wrapper">
     <div class="form-container">
-        <h1>Edit Employee</h1>
+        <h1 th:text="#{employee.title.edit}">Edit Employee</h1>
 
         <div class="info-box">
-            <strong>Note:</strong> Leave password field blank to keep the current password.
+            <strong th:text="#{employee.form.note}">Note:</strong>
+            <span th:text="#{employee.form.note.password}">Leave password field blank to keep the current password.</span>
         </div>
 
         <form th:action="@{/admin/employees/{email}/edit(email=${employeeDTO.email})}"
@@ -83,17 +84,20 @@
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
             <div class="form-group">
-                <label for="name">Name *</label>
+                <label for="name">
+                    <span th:text="#{employee.form.name}">Name</span>
+                    <span th:text="#{common.required}">*</span>
+                </label>
                 <input type="text"
                        id="name"
                        th:field="*{name}"
-                       placeholder="Enter employee name"
+                       th:placeholder="#{employee.form.name.placeholder}"
                        required>
                 <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
             </div>
 
             <div class="form-group">
-                <label for="email">Email (read-only)</label>
+                <label for="email" th:text="#{employee.form.email.readonly}">Email (read-only)</label>
                 <input type="email"
                        id="email"
                        th:field="*{email}"
@@ -102,25 +106,25 @@
             </div>
 
             <div class="form-group">
-                <label for="password">New Password (optional)</label>
+                <label for="password" th:text="#{employee.form.password.new}">New Password (optional)</label>
                 <input type="password"
                        id="password"
                        th:field="*{password}"
-                       placeholder="Leave blank to keep current password">
+                       th:placeholder="#{employee.form.password.keep}">
                 <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
             </div>
 
             <div class="form-group">
-                <label for="phone">Phone</label>
+                <label for="phone" th:text="#{employee.form.phone}">Phone</label>
                 <input type="tel"
                        id="phone"
                        th:field="*{phone}"
-                       placeholder="Enter phone number">
+                       th:placeholder="#{employee.form.phone.placeholder}">
                 <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
             </div>
 
             <div class="form-group">
-                <label for="birthDate">Birth Date</label>
+                <label for="birthDate" th:text="#{employee.form.birthDate}">Birth Date</label>
                 <input type="date"
                        id="birthDate"
                        th:field="*{birthDate}">
@@ -128,8 +132,8 @@
             </div>
 
             <div class="button-row">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a th:href="@{/admin/employees}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" th:text="#{employee.button.save}">Save Changes</button>
+                <a th:href="@{/admin/employees}" class="btn btn-secondary" th:text="#{common.cancel}">Cancel</a>
             </div>
         </form>
     </div>

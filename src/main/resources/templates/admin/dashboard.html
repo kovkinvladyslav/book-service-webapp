@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
+    <title th:text="#{dashboard.title}">Admin Dashboard</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
         .stats-grid {
@@ -45,36 +45,38 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="content-wrapper">
-    <h1>Admin Dashboard</h1>
-    <p>Welcome, <span th:text="${adminName}"></span></p>
+    <h1 th:text="#{dashboard.title}">Admin Dashboard</h1>
+    <p>
+        <span th:text="#{dashboard.welcome(${adminName})}">Welcome</span>
+    </p>
 
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-number" th:text="${employeeCount}">0</div>
-            <div class="stat-label">Total Employees</div>
+            <div class="stat-label" th:text="#{dashboard.stats.employees}">Total Employees</div>
         </div>
         <div class="stat-card">
             <div class="stat-number" th:text="${totalOrders}">0</div>
-            <div class="stat-label">Total Orders</div>
+            <div class="stat-label" th:text="#{dashboard.stats.totalOrders}">Total Orders</div>
         </div>
         <div class="stat-card">
             <div class="stat-number" th:text="${placedOrders}">0</div>
-            <div class="stat-label">Placed Orders</div>
+            <div class="stat-label" th:text="#{dashboard.stats.placedOrders}">Placed Orders</div>
         </div>
         <div class="stat-card">
             <div class="stat-number" th:text="${processingOrders}">0</div>
-            <div class="stat-label">Processing</div>
+            <div class="stat-label" th:text="#{dashboard.stats.processing}">Processing</div>
         </div>
         <div class="stat-card">
             <div class="stat-number" th:text="${completedOrders}">0</div>
-            <div class="stat-label">Completed</div>
+            <div class="stat-label" th:text="#{dashboard.stats.completed}">Completed</div>
         </div>
     </div>
 
     <div class="quick-actions">
-        <a th:href="@{/admin/employees}" class="btn btn-primary">Manage Employees</a>
-        <a th:href="@{/admin/orders}" class="btn btn-primary">View All Orders</a>
-        <a th:href="@{/books}" class="btn btn-secondary">Browse Books</a>
+        <a th:href="@{/admin/employees}" class="btn btn-primary" th:text="#{dashboard.manageEmployees}">Manage Employees</a>
+        <a th:href="@{/admin/orders}" class="btn btn-primary" th:text="#{dashboard.viewAllOrders}">View All Orders</a>
+        <a th:href="@{/books}" class="btn btn-secondary" th:text="#{dashboard.browseBooks}">Browse Books</a>
     </div>
 </div>
 </body>

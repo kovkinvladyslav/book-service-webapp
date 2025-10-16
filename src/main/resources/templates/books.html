@@ -3,16 +3,14 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Books - BookStore</title>
+    <title th:text="#{navbar.books} + ' - BookStore'">Books - BookStore</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
-        /* Стилі для видалених книг (тільки для Employee) */
         .book-card.deleted-book {
             opacity: 0.6;
             border: 2px dashed #dc3545;
             position: relative;
         }
-
         .deleted-badge {
             position: absolute;
             top: 10px;
@@ -25,7 +23,6 @@
             font-weight: 600;
             z-index: 10;
         }
-
         .restore-button {
             position: absolute;
             bottom: 10px;
@@ -40,7 +37,6 @@
             font-size: 0.85rem;
             z-index: 10;
         }
-
         .restore-button:hover {
             background-color: #218838;
         }
@@ -54,30 +50,31 @@
 <div class="content-wrapper">
 
     <div class="header">
-        <h1>Book Catalog</h1>
-        <!-- Add Book button - ONLY for EMPLOYEE -->
+        <h1 th:text="#{books.title}">Book Catalog</h1>
         <a href="/books/manage/add"
            class="btn-add"
-           sec:authorize="hasRole('EMPLOYEE')">
+           sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')"
+           th:text="#{books.addNew}">
             Add New Book
         </a>
     </div>
 
+    <!-- Search and Filter Form -->
     <form class="search-form" method="get" action="/books">
         <div class="form-row">
             <div class="form-group search-box">
-                <label for="searchQuery">Search</label>
+                <label for="searchQuery" th:text="#{books.search}">Search</label>
                 <input type="text"
                        id="searchQuery"
                        name="searchQuery"
                        th:value="${param.searchQuery}"
-                       placeholder="Search by title, author, or description...">
+                       th:placeholder="#{books.search.placeholder}">
             </div>
 
             <div class="form-group">
-                <label for="genre">Genre</label>
+                <label for="genre" th:text="#{books.filter.genre}">Genre</label>
                 <select id="genre" name="genre">
-                    <option value="">All Genres</option>
+                    <option value="" th:text="#{books.filter.genre.all}">All Genres</option>
                     <option th:each="genre : ${genres}"
                             th:value="${genre}"
                             th:text="${genre}"
@@ -87,9 +84,9 @@
             </div>
 
             <div class="form-group">
-                <label for="language">Language</label>
+                <label for="language" th:text="#{books.filter.language}">Language</label>
                 <select id="language" name="language">
-                    <option value="">All Languages</option>
+                    <option value="" th:text="#{books.filter.language.all}">All Languages</option>
                     <option th:each="lang : ${languages}"
                             th:value="${lang.name()}"
                             th:text="${#strings.capitalizeWords(#strings.toLowerCase(#strings.replace(lang.name(), '_', ' ')))}"
@@ -101,31 +98,31 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="minPrice">Min Price ($)</label>
+                <label for="minPrice" th:text="#{books.filter.minPrice}">Min Price ($)</label>
                 <input type="number"
                        id="minPrice"
                        name="minPrice"
                        th:value="${param.minPrice}"
                        min="0"
                        step="0.01"
-                       placeholder="0.00">
+                       th:placeholder="#{books.filter.minPrice.placeholder}">
             </div>
 
             <div class="form-group">
-                <label for="maxPrice">Max Price ($)</label>
+                <label for="maxPrice" th:text="#{books.filter.maxPrice}">Max Price ($)</label>
                 <input type="number"
                        id="maxPrice"
                        name="maxPrice"
                        th:value="${param.maxPrice}"
                        min="0"
                        step="0.01"
-                       placeholder="999.99">
+                       th:placeholder="#{books.filter.maxPrice.placeholder}">
             </div>
 
             <div class="form-group">
-                <label for="ageGroup">Age Group</label>
+                <label for="ageGroup" th:text="#{books.filter.ageGroup}">Age Group</label>
                 <select id="ageGroup" name="ageGroup">
-                    <option value="">All Ages</option>
+                    <option value="" th:text="#{books.filter.ageGroup.all}">All Ages</option>
                     <option th:each="age : ${ageGroups}"
                             th:value="${age.name()}"
                             th:text="${#strings.capitalizeWords(#strings.toLowerCase(#strings.replace(age.name(), '_', ' ')))}"
@@ -135,21 +132,29 @@
             </div>
 
             <div class="form-group">
-                <label for="sort">Sort By</label>
+                <label for="sort" th:text="#{books.filter.sort}">Sort By</label>
                 <select id="sort" name="sort">
-                    <option value="id,asc" th:selected="${param.sort != null && param.sort[0] == 'id,asc'}">Newest First</option>
-                    <option value="id,desc" th:selected="${param.sort != null && param.sort[0] == 'id,desc'}">Oldest First</option>
-                    <option value="name,asc" th:selected="${param.sort != null && param.sort[0] == 'name,asc'}">Name (A-Z)</option>
-                    <option value="name,desc" th:selected="${param.sort != null && param.sort[0] == 'name,desc'}">Name (Z-A)</option>
-                    <option value="price,asc" th:selected="${param.sort != null && param.sort[0] == 'price,asc'}">Price (Low to High)</option>
-                    <option value="price,desc" th:selected="${param.sort != null && param.sort[0] == 'price,desc'}">Price (High to Low)</option>
-                    <option value="author,asc" th:selected="${param.sort != null && param.sort[0] == 'author,asc'}">Author (A-Z)</option>
-                    <option value="author,desc" th:selected="${param.sort != null && param.sort[0] == 'author,desc'}">Author (Z-A)</option>
+                    <option value="id,asc" th:selected="${param.sort != null && param.sort[0] == 'id,asc'}"
+                            th:text="#{books.filter.sort.newestFirst}">Newest First</option>
+                    <option value="id,desc" th:selected="${param.sort != null && param.sort[0] == 'id,desc'}"
+                            th:text="#{books.filter.sort.oldestFirst}">Oldest First</option>
+                    <option value="name,asc" th:selected="${param.sort != null && param.sort[0] == 'name,asc'}"
+                            th:text="#{books.filter.sort.nameAsc}">Name (A-Z)</option>
+                    <option value="name,desc" th:selected="${param.sort != null && param.sort[0] == 'name,desc'}"
+                            th:text="#{books.filter.sort.nameDesc}">Name (Z-A)</option>
+                    <option value="price,asc" th:selected="${param.sort != null && param.sort[0] == 'price,asc'}"
+                            th:text="#{books.filter.sort.priceAsc}">Price (Low to High)</option>
+                    <option value="price,desc" th:selected="${param.sort != null && param.sort[0] == 'price,desc'}"
+                            th:text="#{books.filter.sort.priceDesc}">Price (High to Low)</option>
+                    <option value="author,asc" th:selected="${param.sort != null && param.sort[0] == 'author,asc'}"
+                            th:text="#{books.filter.sort.authorAsc}">Author (A-Z)</option>
+                    <option value="author,desc" th:selected="${param.sort != null && param.sort[0] == 'author,desc'}"
+                            th:text="#{books.filter.sort.authorDesc}">Author (Z-A)</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="size">Items Per Page</label>
+                <label for="size" th:text="#{books.filter.itemsPerPage}">Items Per Page</label>
                 <select id="size" name="size">
                     <option value="6" th:selected="${param.size != null && param.size[0] == '6'}">6</option>
                     <option value="10" th:selected="${param.size == null || param.size[0] == '10'}">10</option>
@@ -160,13 +165,15 @@
         </div>
 
         <div class="button-group">
-            <button type="submit" class="btn-search">Search</button>
-            <button type="button" class="btn-reset" onclick="window.location.href='/books'">Reset Filters</button>
+            <button type="submit" class="btn-search" th:text="#{books.button.search}">Search</button>
+            <button type="button" class="btn-reset" onclick="window.location.href='/books'"
+                    th:text="#{books.button.reset}">Reset Filters</button>
         </div>
 
         <input type="hidden" name="page" value="0">
     </form>
 
+    <!-- Book list -->
     <div th:if="${books.content.size() > 0}">
         <div class="book-grid">
             <!-- For CLIENT: show only non-deleted books -->
@@ -176,30 +183,42 @@
                    th:href="@{'/books/' + ${book.name}}"
                    class="book-card">
                     <div class="book-title" th:text="${book.name}">Book Title</div>
-                    <div class="book-author" th:text="'by ' + ${book.author}">by Author</div>
+                    <div class="book-author">
+                        <span th:text="#{common.by}">by</span>
+                        <span th:text="${book.author}">Author</span>
+                    </div>
                     <div class="book-meta">
                         <span class="meta-tag" th:text="${book.genre}">Genre</span>
-                        <span class="meta-tag" th:text="${book.pages} + ' pages'">Pages</span>
+                        <span class="meta-tag">
+                            <span th:text="${book.pages}">Pages</span>
+                            <span th:text="#{common.pages}">pages</span>
+                        </span>
                     </div>
                     <div class="book-price" th:text="'$' + ${#numbers.formatDecimal(book.price, 1, 2)}">$0.00</div>
                     <div class="book-description" th:text="${book.description}">Description...</div>
                 </a>
             </th:block>
 
-            <!-- For EMPLOYEE: show all books, mark deleted ones -->
-            <th:block sec:authorize="hasRole('EMPLOYEE')">
+            <!-- For EMPLOYEE or ADMIN: show all books, mark deleted ones -->
+            <th:block sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">
                 <div th:each="book : ${books.content}"
                      class="book-card"
                      th:classappend="${book.deleted} ? 'deleted-book' : ''">
 
-                    <span th:if="${book.deleted}" class="deleted-badge">DELETED</span>
+                    <span th:if="${book.deleted}" class="deleted-badge" th:text="#{books.badge.deleted}">DELETED</span>
 
                     <a th:href="@{'/books/' + ${book.name}}" style="text-decoration: none; color: inherit; display: block;">
                         <div class="book-title" th:text="${book.name}">Book Title</div>
-                        <div class="book-author" th:text="'by ' + ${book.author}">by Author</div>
+                        <div class="book-author">
+                            <span th:text="#{common.by}">by</span>
+                            <span th:text="${book.author}">Author</span>
+                        </div>
                         <div class="book-meta">
                             <span class="meta-tag" th:text="${book.genre}">Genre</span>
-                            <span class="meta-tag" th:text="${book.pages} + ' pages'">Pages</span>
+                            <span class="meta-tag">
+                                <span th:text="${book.pages}">Pages</span>
+                                <span th:text="#{common.pages}">pages</span>
+                            </span>
                         </div>
                         <div class="book-price" th:text="'$' + ${#numbers.formatDecimal(book.price, 1, 2)}">$0.00</div>
                         <div class="book-description" th:text="${book.description}">Description...</div>
@@ -211,7 +230,7 @@
                           style="display: inline;"
                           onclick="event.stopPropagation();">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="restore-button">Restore</button>
+                        <button type="submit" class="restore-button" th:text="#{books.button.restore}">Restore</button>
                     </form>
                 </div>
             </th:block>
@@ -223,10 +242,16 @@
                    th:href="@{'/books/' + ${book.name}}"
                    class="book-card">
                     <div class="book-title" th:text="${book.name}">Book Title</div>
-                    <div class="book-author" th:text="'by ' + ${book.author}">by Author</div>
+                    <div class="book-author">
+                        <span th:text="#{common.by}">by</span>
+                        <span th:text="${book.author}">Author</span>
+                    </div>
                     <div class="book-meta">
                         <span class="meta-tag" th:text="${book.genre}">Genre</span>
-                        <span class="meta-tag" th:text="${book.pages} + ' pages'">Pages</span>
+                        <span class="meta-tag">
+                            <span th:text="${book.pages}">Pages</span>
+                            <span th:text="#{common.pages}">pages</span>
+                        </span>
                     </div>
                     <div class="book-price" th:text="'$' + ${#numbers.formatDecimal(book.price, 1, 2)}">$0.00</div>
                     <div class="book-description" th:text="${book.description}">Description...</div>
@@ -235,26 +260,29 @@
         </div>
     </div>
 
+    <!-- Empty state -->
     <div th:if="${books.content.size() == 0}" class="empty-state">
-        <h2>No books found</h2>
-        <p>Try adjusting your search filters or browse all books.</p>
+        <h2 th:text="#{books.empty.title}">No books found</h2>
+        <p th:text="#{books.empty.message}">Try adjusting your search filters or browse all books.</p>
         <button type="button"
                 class="btn-reset"
-                onclick="window.location.href='/books'">
+                onclick="window.location.href='/books'"
+                th:text="#{books.empty.button}">
             Show All Books
         </button>
     </div>
 
+    <!-- Pagination -->
     <div class="pagination" th:if="${books.totalPages > 1}">
         <!-- Previous Button -->
         <a th:href="@{/books(page=${books.number - 1}, size=${books.size}, sort=${param.sort}, genre=${param.genre}, language=${param.language}, ageGroup=${param.ageGroup}, minPrice=${param.minPrice}, maxPrice=${param.maxPrice}, searchQuery=${param.searchQuery})}"
            th:classappend="${books.first} ? 'disabled'"
            th:unless="${books.first}">
-            ← Previous
+            ← <span th:text="#{books.pagination.previous}">Previous</span>
         </a>
-        <span th:if="${books.first}" class="disabled">← Previous</span>
+        <span th:if="${books.first}" class="disabled">← <span th:text="#{books.pagination.previous}">Previous</span></span>
 
-        <!-- Page Numbers (show max 5 pages) -->
+        <!-- Page Numbers -->
         <th:block th:each="i : ${#numbers.sequence(0, books.totalPages - 1)}">
             <a th:if="${i >= books.number - 2 && i <= books.number + 2}"
                th:href="@{/books(page=${i}, size=${books.size}, sort=${param.sort}, genre=${param.genre}, language=${param.language}, ageGroup=${param.ageGroup}, minPrice=${param.minPrice}, maxPrice=${param.maxPrice}, searchQuery=${param.searchQuery})}"
@@ -267,13 +295,15 @@
         <a th:href="@{/books(page=${books.number + 1}, size=${books.size}, sort=${param.sort}, genre=${param.genre}, language=${param.language}, ageGroup=${param.ageGroup}, minPrice=${param.minPrice}, maxPrice=${param.maxPrice}, searchQuery=${param.searchQuery})}"
            th:classappend="${books.last} ? 'disabled'"
            th:unless="${books.last}">
-            Next →
+            <span th:text="#{books.pagination.next}">Next</span> →
         </a>
-        <span th:if="${books.last}" class="disabled">Next →</span>
+        <span th:if="${books.last}" class="disabled"><span th:text="#{books.pagination.next}">Next</span> →</span>
     </div>
 
     <div class="pagination-info" th:if="${books.totalPages > 0}">
-        <span th:text="'Showing ' + ${books.number * books.size + 1} + ' to ' + ${books.number * books.size + books.numberOfElements} + ' of ' + ${books.totalElements} + ' books'"></span>
+        <span th:text="#{books.pagination.showing(${books.number * books.size + 1}, ${books.number * books.size + books.numberOfElements}, ${books.totalElements})}">
+            Showing X to Y of Z books
+        </span>
     </div>
 
 </div>

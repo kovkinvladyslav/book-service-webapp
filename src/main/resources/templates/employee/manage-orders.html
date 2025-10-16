@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Orders - Employee</title>
+    <title th:text="#{employee.orders.title}">Manage Orders - Employee</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
         .orders-section {
@@ -91,23 +91,23 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="content-wrapper">
-    <h1 class="page-title">Manage Orders</h1>
+    <h1 class="page-title" th:text="#{employee.orders.title}">Manage Orders</h1>
 
     <!-- Section 1: New Orders -->
     <section class="orders-section">
-        <h2>New Orders (PLACED)</h2>
+        <h2 th:text="#{employee.orders.new}">New Orders (PLACED)</h2>
         <div th:if="${newOrders == null or newOrders.isEmpty()}" class="empty-state">
-            <p>No new orders yet</p>
+            <p th:text="#{employee.orders.empty.new}">No new orders yet</p>
         </div>
         <table th:if="${newOrders != null and !newOrders.isEmpty()}">
             <thead>
             <tr>
-                <th>Client</th>
-                <th>Date</th>
-                <th>Books</th>
-                <th>Total Price</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th th:text="#{employee.orders.table.client}">Client</th>
+                <th th:text="#{employee.orders.table.date}">Date</th>
+                <th th:text="#{employee.orders.table.books}">Books</th>
+                <th th:text="#{employee.orders.table.total}">Total Price</th>
+                <th th:text="#{employee.orders.table.status}">Status</th>
+                <th th:text="#{employee.orders.table.action}">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -120,7 +120,8 @@
                             <span class="book-item-name" th:text="${item.book.name}"></span>
                             <br/>
                             <span class="book-item-details">
-                                Qty: <span th:text="${item.quantity}"></span> ×
+                                <span th:text="#{employee.orders.quantity}">Qty</span>:
+                                <span th:text="${item.quantity}"></span> ×
                                 $<span th:text="${#numbers.formatDecimal(item.book.price, 1, 2)}"></span> =
                                 $<span th:text="${#numbers.formatDecimal(item.book.price * item.quantity, 1, 2)}"></span>
                             </span>
@@ -135,7 +136,7 @@
                 <td>
                     <form th:action="@{'/employee/accept/' + ${order.id}}" method="post">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-primary">Accept</button>
+                        <button type="submit" class="btn btn-primary" th:text="#{employee.orders.button.accept}">Accept</button>
                     </form>
                 </td>
             </tr>
@@ -145,20 +146,20 @@
 
     <!-- Section 2: My Active Orders (PROCESSING only) -->
     <section class="orders-section">
-        <h2>My Active Orders</h2>
+        <h2 th:text="#{employee.orders.myActive}">My Active Orders</h2>
         <div th:if="${myOrders == null or #lists.isEmpty(myOrders.?[orderStatus.name() == 'PROCESSING'])}"
              class="empty-state">
-            <p>You haven't accepted any orders yet.</p>
+            <p th:text="#{employee.orders.empty.active}">You haven't accepted any orders yet.</p>
         </div>
         <table th:if="${myOrders != null and !#lists.isEmpty(myOrders.?[orderStatus.name() == 'PROCESSING'])}">
             <thead>
             <tr>
-                <th>Client</th>
-                <th>Date</th>
-                <th>Books</th>
-                <th>Total Price</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th th:text="#{employee.orders.table.client}">Client</th>
+                <th th:text="#{employee.orders.table.date}">Date</th>
+                <th th:text="#{employee.orders.table.books}">Books</th>
+                <th th:text="#{employee.orders.table.total}">Total Price</th>
+                <th th:text="#{employee.orders.table.status}">Status</th>
+                <th th:text="#{employee.orders.table.action}">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -171,7 +172,8 @@
                             <span class="book-item-name" th:text="${item.book.name}"></span>
                             <br/>
                             <span class="book-item-details">
-                                Qty: <span th:text="${item.quantity}"></span> ×
+                                <span th:text="#{employee.orders.quantity}">Qty</span>:
+                                <span th:text="${item.quantity}"></span> ×
                                 $<span th:text="${#numbers.formatDecimal(item.book.price, 1, 2)}"></span> =
                                 $<span th:text="${#numbers.formatDecimal(item.book.price * item.quantity, 1, 2)}"></span>
                             </span>
@@ -186,7 +188,7 @@
                 <td>
                     <form th:action="@{'/employee/complete/' + ${order.id}}" method="post">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-success">Mark Completed</button>
+                        <button type="submit" class="btn btn-success" th:text="#{employee.orders.button.complete}">Mark Completed</button>
                     </form>
                 </td>
             </tr>
@@ -196,19 +198,19 @@
 
     <!-- Section 3: Completed Orders -->
     <section class="orders-section">
-        <h2>Completed Orders</h2>
+        <h2 th:text="#{employee.orders.completed}">Completed Orders</h2>
         <div th:if="${myOrders == null or #lists.isEmpty(myOrders.?[orderStatus.name() == 'COMPLETED'])}"
              class="empty-state">
-            <p>No completed orders yet.</p>
+            <p th:text="#{employee.orders.empty.completed}">No completed orders yet.</p>
         </div>
         <table th:if="${myOrders != null and !#lists.isEmpty(myOrders.?[orderStatus.name() == 'COMPLETED'])}">
             <thead>
             <tr>
-                <th>Client</th>
-                <th>Date</th>
-                <th>Books</th>
-                <th>Total Price</th>
-                <th>Status</th>
+                <th th:text="#{employee.orders.table.client}">Client</th>
+                <th th:text="#{employee.orders.table.date}">Date</th>
+                <th th:text="#{employee.orders.table.books}">Books</th>
+                <th th:text="#{employee.orders.table.total}">Total Price</th>
+                <th th:text="#{employee.orders.table.status}">Status</th>
             </tr>
             </thead>
             <tbody>
@@ -221,7 +223,8 @@
                             <span class="book-item-name" th:text="${item.book.name}"></span>
                             <br/>
                             <span class="book-item-details">
-                                Qty: <span th:text="${item.quantity}"></span> ×
+                                <span th:text="#{employee.orders.quantity}">Qty</span>:
+                                <span th:text="${item.quantity}"></span> ×
                                 $<span th:text="${#numbers.formatDecimal(item.book.price, 1, 2)}"></span> =
                                 $<span th:text="${#numbers.formatDecimal(item.book.price * item.quantity, 1, 2)}"></span>
                             </span>

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>500 - Server Error</title>
+    <title th:text="#{error.500.code} + ' - ' + #{error.500.title}">500 - Server Error</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
         body {
@@ -20,18 +20,22 @@
 <body>
 
 <div class="error-container">
-    <div class="error-code">500</div>
-    <h1 class="error-title">Internal Server Error</h1>
-    <p style="font-size: 16px; color: #666; margin-bottom: 30px;" th:if="${errorMessage}" th:text="${errorMessage}">
+    <div class="error-code" th:text="#{error.500.code}">500</div>
+    <h1 class="error-title" th:text="#{error.500.title}">Internal Server Error</h1>
+    <p style="font-size: 16px; color: #666; margin-bottom: 30px;"
+       th:if="${errorMessage}"
+       th:text="${errorMessage}">
         Something went wrong on our end. We're working to fix it.
     </p>
-    <p style="font-size: 16px; color: #666; margin-bottom: 30px;" th:unless="${errorMessage}">
+    <p style="font-size: 16px; color: #666; margin-bottom: 30px;"
+       th:unless="${errorMessage}"
+       th:text="#{error.500.message}">
         Something went wrong on our end. We're working to fix it.
     </p>
 
     <div class="button-group" style="justify-content: center;">
-        <a href="/books" class="btn btn-danger">Go Home</a>
-        <a href="javascript:location.reload()" class="btn btn-secondary">Try Again</a>
+        <a href="/books" class="btn btn-danger" th:text="#{error.500.button.home}">Go Home</a>
+        <a href="javascript:location.reload()" class="btn btn-secondary" th:text="#{error.500.button.retry}">Try Again</a>
     </div>
 </div>
 

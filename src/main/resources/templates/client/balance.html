@@ -2,23 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>My Balance - BookStore</title>
+    <title th:text="#{balance.title}">My Balance - BookStore</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="content-wrapper">
-    <h1>My Balance</h1>
+    <h1 th:text="#{balance.title}">My Balance</h1>
 
     <div class="balance-card">
-        <p>Current balance:</p>
+        <p th:text="#{balance.current}">Current balance:</p>
         <h2 th:text="'$' + ${#numbers.formatDecimal(client.balance, 1, 2)}"></h2>
 
         <form th:action="@{/client/deposit}" method="post" class="deposit-form">
-            <label for="amount">Add funds:</label>
+            <label for="amount" th:text="#{balance.addFunds}">Add funds:</label>
             <input type="number" id="amount" name="amount" step="0.01" min="1" required>
-            <button type="submit" class="btn btn-primary">Deposit</button>
+            <button type="submit" class="btn btn-primary" th:text="#{balance.button.deposit}">Deposit</button>
         </form>
     </div>
 </div>

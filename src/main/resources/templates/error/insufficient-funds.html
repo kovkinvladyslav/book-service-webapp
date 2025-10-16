@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Payment Failed</title>
+    <title th:text="#{error.funds.title}">Payment Failed</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
         body {
@@ -58,9 +58,10 @@
 
 <body>
 <div class="error-container">
-    <h1>Payment Failed</h1>
-    <p th:text="${errorMessage}">Insufficient balance. Please top up your account.</p>
-    <a href="/client/balance" class="btn btn-primary">Top Up Balance</a>
+    <h1 th:text="#{error.funds.title}">Payment Failed</h1>
+    <p th:if="${errorMessage}" th:text="${errorMessage}">Insufficient balance. Please top up your account.</p>
+    <p th:unless="${errorMessage}" th:text="#{error.funds.message}">Insufficient balance. Please top up your account.</p>
+    <a href="/client/balance" class="btn btn-primary" th:text="#{error.funds.button.topUp}">Top Up Balance</a>
 </div>
 </body>
 </html>

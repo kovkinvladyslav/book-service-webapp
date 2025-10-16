@@ -7,57 +7,73 @@
 <body>
 <nav th:fragment="navbar" class="navbar">
     <a href="/" class="navbar-brand">
-        <span>BookStore</span>
+        <span th:text="#{navbar.brand}">BookStore</span>
     </a>
 
     <ul class="navbar-menu">
-        <li><a href="/books" class="navbar-link">Books</a></li>
+        <!-- Common links -->
+        <li><a href="/books" class="navbar-link" th:text="#{navbar.books}">Books</a></li>
 
+        <!-- ADMIN -->
         <li sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/admin/dashboard}" class="navbar-link">Dashboard</a>
+            <a th:href="@{/admin/dashboard}" class="navbar-link" th:text="#{navbar.admin.dashboard}">Dashboard</a>
         </li>
         <li sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/admin/employees}" class="navbar-link">Employees</a>
+            <a th:href="@{/admin/employees}" class="navbar-link" th:text="#{navbar.admin.employees}">Employees</a>
         </li>
         <li sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/admin/orders}" class="navbar-link">All Orders</a>
+            <a th:href="@{/admin/orders}" class="navbar-link" th:text="#{navbar.admin.orders}">All Orders</a>
         </li>
         <li sec:authorize="hasRole('ADMIN')">
-            <a href="/books/manage/add" class="navbar-link">Add Book</a>
+            <a href="/books/manage/add" class="navbar-link" th:text="#{navbar.addBook}">Add Book</a>
         </li>
 
+        <!-- EMPLOYEE -->
         <li sec:authorize="hasRole('EMPLOYEE') and !hasRole('ADMIN')">
-            <a href="/books/manage/add" class="navbar-link">Add Book</a>
+            <a href="/books/manage/add" class="navbar-link" th:text="#{navbar.addBook}">Add Book</a>
         </li>
         <li sec:authorize="hasRole('EMPLOYEE') and !hasRole('ADMIN')">
-            <a href="/employee/orders" class="navbar-link">Manage Orders</a>
+            <a href="/employee/orders" class="navbar-link" th:text="#{navbar.employee.orders}">Manage Orders</a>
         </li>
         <li sec:authorize="hasRole('EMPLOYEE') and !hasRole('ADMIN')">
-            <a href="/employee/profile" class="navbar-link">Profile</a>
+            <a href="/employee/profile" class="navbar-link" th:text="#{navbar.profile}">Profile</a>
         </li>
 
+        <!-- CLIENT -->
         <li sec:authorize="hasRole('CLIENT')">
-            <a href="/orders/cart" class="navbar-link">My Cart</a>
+            <a href="/orders/cart" class="navbar-link" th:text="#{navbar.client.cart}">My Cart</a>
         </li>
         <li sec:authorize="hasRole('CLIENT')">
-            <a href="/orders" class="navbar-link">My Orders</a>
+            <a href="/orders" class="navbar-link" th:text="#{navbar.client.orders}">My Orders</a>
         </li>
         <li sec:authorize="hasRole('CLIENT')">
-            <a href="/client/profile" class="navbar-link">Profile</a>
+            <a href="/client/profile" class="navbar-link" th:text="#{navbar.profile}">Profile</a>
         </li>
 
+        <!-- Unauthenticated -->
         <li sec:authorize="!isAuthenticated()">
-            <a href="/login" class="navbar-link">Login</a>
+            <a href="/login" class="navbar-link" th:text="#{navbar.login}">Login</a>
         </li>
         <li sec:authorize="!isAuthenticated()">
-            <a href="/register" class="navbar-link navbar-link-register">Register</a>
+            <a href="/register" class="navbar-link navbar-link-register" th:text="#{navbar.register}">Register</a>
         </li>
 
+        <!-- Authenticated -->
         <li sec:authorize="isAuthenticated()" class="navbar-user">
             <span class="navbar-email" sec:authentication="name"></span>
             <form th:action="@{/logout}" method="post" style="display:inline;">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <button type="submit" class="navbar-link navbar-link-logout">Logout</button>
+                <button type="submit" class="navbar-link navbar-link-logout" th:text="#{navbar.logout}">Logout</button>
+            </form>
+        </li>
+
+        <!-- Language Switcher -->
+        <li class="navbar-lang">
+            <form method="get" th:action="@{/}">
+                <select name="lang" onchange="this.form.submit()" class="lang-select">
+                    <option value="en" th:selected="${#locale.language == 'en'}">EN</option>
+                    <option value="uk" th:selected="${#locale.language == 'uk'}">UA</option>
+                </select>
             </form>
         </li>
     </ul>

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>My Orders - BookStore</title>
+    <title th:text="#{orders.title}">My Orders - BookStore</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
         table {
@@ -71,13 +71,13 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="content-wrapper">
-    <h1 class="page-title">My Orders</h1>
+    <h1 class="page-title" th:text="#{orders.title}">My Orders</h1>
 
     <!-- Empty orders -->
     <div th:if="${orders == null or orders.isEmpty()}" class="empty-state">
-        <h2>No orders yet</h2>
-        <p>When you place an order, it will appear here.</p>
-        <a th:href="@{/books}" class="btn btn-primary">Start Shopping</a>
+        <h2 th:text="#{orders.empty.title}">No orders yet</h2>
+        <p th:text="#{orders.empty.message}">When you place an order, it will appear here.</p>
+        <a th:href="@{/books}" class="btn btn-primary" th:text="#{orders.empty.button}">Start Shopping</a>
     </div>
 
     <!-- Orders table -->
@@ -85,13 +85,13 @@
         <table>
             <thead>
             <tr>
-                <th>#</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Books</th>
-                <th>Processed by</th>
-                <th>Action</th>
+                <th th:text="#{orders.table.number}">#</th>
+                <th th:text="#{orders.table.date}">Date</th>
+                <th th:text="#{orders.table.status}">Status</th>
+                <th th:text="#{orders.table.total}">Total</th>
+                <th th:text="#{orders.table.books}">Books</th>
+                <th th:text="#{orders.table.employee}">Processed by</th>
+                <th th:text="#{orders.table.action}">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -109,16 +109,16 @@
                             th:text="${item.book.name} + ' (' + ${item.quantity} + ')'"></li>
                     </ul>
                 </td>
-                <td th:text="${order.employeeEmail != null ? order.employeeEmail : 'Not assigned yet'}"></td>
+                <td th:text="${order.employeeEmail != null ? order.employeeEmail : #{orders.notAssigned}}"></td>
                 <td>
                     <form th:if="${order.orderStatus.name() == 'PLACED'}"
                           th:action="@{'/orders/cancel/' + ${order.id}}" method="post">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        <button type="submit" class="btn btn-danger">Cancel</button>
+                        <button type="submit" class="btn btn-danger" th:text="#{orders.button.cancel}">Cancel</button>
                     </form>
 
-                    <span th:if="${order.orderStatus.name() == 'CANCELLED'}">Cancelled</span>
-                    <span th:if="${order.orderStatus.name() == 'COMPLETED'}">Completed</span>
+                    <span th:if="${order.orderStatus.name() == 'CANCELLED'}" th:text="#{orders.status.cancelled}">Cancelled</span>
+                    <span th:if="${order.orderStatus.name() == 'COMPLETED'}" th:text="#{orders.status.completed}">Completed</span>
                 </td>
             </tr>
             </tbody>

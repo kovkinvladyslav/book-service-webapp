@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>409 - Already Exists</title>
+    <title th:text="#{error.409.code} + ' - ' + #{error.409.title}">409 - Already Exists</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
         body {
@@ -48,25 +48,29 @@
 <body>
 
 <div class="error-container">
-    <div class="error-code">409</div>
-    <h1 class="error-title">Duplicate Entry</h1>
+    <div class="error-code" th:text="#{error.409.code}">409</div>
+    <h1 class="error-title" th:text="#{error.409.title}">Duplicate Entry</h1>
 
     <div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}">
         A book with this name already exists in the system.
     </div>
 
+    <div class="alert alert-error" th:unless="${errorMessage}" th:text="#{error.409.message}">
+        A book with this name already exists in the system.
+    </div>
+
     <div class="info-section">
-        <h3>What you can do:</h3>
+        <h3 th:text="#{error.409.whatYouCanDo}">What you can do:</h3>
         <ul>
-            <li>Go back and choose a different book name</li>
-            <li>Edit the existing book instead of creating a new one</li>
-            <li>Add edition or year information to make it unique</li>
+            <li th:text="#{error.409.suggestion1}">Go back and choose a different book name</li>
+            <li th:text="#{error.409.suggestion2}">Edit the existing book instead of creating a new one</li>
+            <li th:text="#{error.409.suggestion3}">Add edition or year information to make it unique</li>
         </ul>
     </div>
 
     <div class="button-group" style="justify-content: center;">
-        <a href="javascript:history.back()" class="btn btn-danger">Go Back</a>
-        <a href="/books" class="btn btn-secondary">All Books</a>
+        <a href="javascript:history.back()" class="btn btn-danger" th:text="#{error.409.button.back}">Go Back</a>
+        <a href="/books" class="btn btn-secondary" th:text="#{error.409.button.allBooks}">All Books</a>
     </div>
 </div>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - BookStore</title>
+    <title th:text="#{login.title}">Login - BookStore</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
@@ -13,45 +13,51 @@
 
 <div class="content-wrapper">
     <div class="auth-card">
-        <h2>Welcome Back</h2>
-        <p class="subtitle">Login to your BookStore account</p>
+        <h2 th:text="#{login.heading}">Welcome Back</h2>
+        <p class="subtitle" th:text="#{login.subtitle}">Login to your BookStore account</p>
 
         <!-- Success message -->
         <div th:if="${param.registered}" class="alert alert-success">
-            ✓ Registration successful! Please login.
+            ✓ <span th:text="#{login.success}">Registration successful! Please login.</span>
         </div>
 
         <!-- Error message -->
         <div th:if="${param.error}" class="alert alert-error">
-            ✗ Invalid email or password
+            ✗ <span th:text="#{login.error}">Invalid email or password</span>
         </div>
 
         <!-- Logout message -->
         <div th:if="${param.logout}" class="alert alert-info">
-            ℹ You have been logged out
+            ℹ <span th:text="#{login.logout}">You have been logged out</span>
         </div>
 
         <form th:action="@{/login}" method="post">
             <div class="form-group">
-                <label for="username">Email</label>
+                <label for="username" th:text="#{login.email}">Email</label>
                 <input type="text" id="username" name="username"
-                       placeholder="your@email.com" required autofocus>
+                       th:placeholder="#{login.email.placeholder}" required autofocus>
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password" th:text="#{login.password}">Password</label>
                 <input type="password" id="password" name="password"
-                       placeholder="Enter your password" required>
+                       th:placeholder="#{login.password.placeholder}" required>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Login</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;"
+                    th:text="#{login.button}">Login</button>
         </form>
 
-        <div class="divider"><span>or</span></div>
+        <div class="divider"><span th:text="#{common.or}">or</span></div>
 
         <div class="links">
-            <p>Don't have an account? <a th:href="@{/register}">Register</a></p>
-            <p><a th:href="@{/}">← Back to home</a></p>
+            <p>
+                <span th:text="#{login.noAccount}">Don't have an account?</span>
+                <a th:href="@{/register}" th:text="#{login.register}">Register</a>
+            </p>
+            <p>
+                <a th:href="@{/}">← <span th:text="#{login.backHome}">Back to home</span></a>
+            </p>
         </div>
     </div>
 </div>

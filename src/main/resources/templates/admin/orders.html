@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>All Orders - Admin</title>
+    <title th:text="#{admin.orders.title}">All Orders - Admin</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <style>
         .filter-section {
@@ -89,15 +89,15 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="content-wrapper">
-    <h1>All Orders</h1>
+    <h1 th:text="#{admin.orders.title}">All Orders</h1>
 
     <div class="filter-section">
         <form method="get" th:action="@{/admin/orders}">
             <div class="filter-row">
                 <div class="filter-group">
-                    <label for="status">Filter by Status</label>
+                    <label for="status" th:text="#{admin.orders.filter}">Filter by Status</label>
                     <select id="status" name="status">
-                        <option value="">All Orders</option>
+                        <option value="" th:text="#{admin.orders.filter.all}">All Orders</option>
                         <option th:each="stat : ${statuses}"
                                 th:value="${stat.name()}"
                                 th:text="${#strings.capitalizeWords(#strings.toLowerCase(#strings.replace(stat.name(), '_', ' ')))}"
@@ -105,41 +105,42 @@
                         </option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Filter</button>
-                <a th:href="@{/admin/orders}" class="btn btn-secondary">Reset</a>
+                <button type="submit" class="btn btn-primary" th:text="#{admin.orders.filter.button}">Filter</button>
+                <a th:href="@{/admin/orders}" class="btn btn-secondary" th:text="#{admin.orders.filter.reset}">Reset</a>
             </div>
         </form>
     </div>
 
     <div th:if="${orders.isEmpty()}" class="empty-state">
-        <h2>No orders found</h2>
-        <p>There are no orders matching your criteria.</p>
+        <h2 th:text="#{admin.orders.empty.title}">No orders found</h2>
+        <p th:text="#{admin.orders.empty.message}">There are no orders matching your criteria.</p>
     </div>
 
     <table th:if="${!orders.isEmpty()}">
         <thead>
         <tr>
-            <th>Order ID</th>
-            <th>Client</th>
-            <th>Employee</th>
-            <th>Date</th>
-            <th>Books</th>
-            <th>Total Price</th>
-            <th>Status</th>
+            <th th:text="#{admin.orders.table.orderId}">Order ID</th>
+            <th th:text="#{admin.orders.table.client}">Client</th>
+            <th th:text="#{admin.orders.table.employee}">Employee</th>
+            <th th:text="#{admin.orders.table.date}">Date</th>
+            <th th:text="#{admin.orders.table.books}">Books</th>
+            <th th:text="#{admin.orders.table.total}">Total Price</th>
+            <th th:text="#{admin.orders.table.status}">Status</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="order : ${orders}">
             <td th:text="${order.id}"></td>
             <td th:text="${order.clientEmail}"></td>
-            <td th:text="${order.employeeEmail != null ? order.employeeEmail : 'Not assigned'}"></td>
+            <td th:text="${order.employeeEmail != null ? order.employeeEmail : #{admin.orders.notAssigned}}"></td>
             <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
             <td>
                 <ul class="book-list">
                     <li th:each="item : ${order.bookItems}">
                         <span th:text="${item.book.name}"></span>
                         <span style="color: #666; font-size: 0.85rem;">
-                            (Qty: <span th:text="${item.quantity}"></span> ×
+                            (<span th:text="#{admin.orders.quantity}">Qty</span>:
+                            <span th:text="${item.quantity}"></span> ×
                             $<span th:text="${#numbers.formatDecimal(item.book.price, 1, 2)}"></span>)
                         </span>
                     </li>

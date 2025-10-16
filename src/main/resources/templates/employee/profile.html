@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Employee Profile</title>
+    <title th:text="#{employee.profile.title}">Employee Profile</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
@@ -10,18 +10,27 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="content-wrapper">
-    <h1>Employee Profile</h1>
+    <h1 th:text="#{employee.profile.title}">Employee Profile</h1>
 
     <div class="profile-card">
         <div class="profile-info">
-            <p><strong>Name:</strong> <span th:text="${employee.name}"></span></p>
-            <p><strong>Email:</strong> <span th:text="${employee.email}"></span></p>
-            <p><strong>Phone:</strong> <span th:text="${employee.phone != null ? employee.phone : 'N/A'}"></span></p>
+            <p>
+                <strong th:text="#{employee.profile.name} + ':'">Name:</strong>
+                <span th:text="${employee.name}"></span>
+            </p>
+            <p>
+                <strong th:text="#{employee.profile.email} + ':'">Email:</strong>
+                <span th:text="${employee.email}"></span>
+            </p>
+            <p>
+                <strong th:text="#{employee.profile.phone} + ':'">Phone:</strong>
+                <span th:text="${employee.phone != null ? employee.phone : #{employee.profile.notAvailable}}"></span>
+            </p>
         </div>
 
         <div class="profile-actions" style="margin-top: 20px;">
-            <a th:href="@{/employee/orders}" class="btn btn-primary">Manage Orders</a>
-            <a th:href="@{/logout}" class="btn btn-secondary">Logout</a>
+            <a th:href="@{/employee/orders}" class="btn btn-primary" th:text="#{employee.profile.button.orders}">Manage Orders</a>
+            <a th:href="@{/logout}" class="btn btn-secondary" th:text="#{employee.profile.button.logout}">Logout</a>
         </div>
     </div>
 </div>

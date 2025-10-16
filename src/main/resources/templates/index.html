@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookStore - Home</title>
+    <title th:text="#{index.title}">BookStore - Home</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
@@ -14,60 +14,60 @@
 <div class="index-container">
     <!-- GUEST -->
     <div class="index-card" sec:authorize="!isAuthenticated()">
-        <h1>BookStore</h1>
-        <p class="subtitle">Discover your next favorite book</p>
+        <h1 th:text="#{index.brand}">BookStore</h1>
+        <p class="subtitle" th:text="#{index.subtitle}">Discover your next favorite book</p>
         <div class="index-button-group">
-            <a th:href="@{/login}" class="btn btn-primary">Login</a>
-            <a th:href="@{/register}" class="btn btn-secondary">Register</a>
-            <div class="divider"><span>or</span></div>
-            <a th:href="@{/books}" class="btn btn-secondary">Browse Books</a>
+            <a th:href="@{/login}" class="btn btn-primary" th:text="#{index.button.login}">Login</a>
+            <a th:href="@{/register}" class="btn btn-secondary" th:text="#{index.button.register}">Register</a>
+            <div class="divider"><span th:text="#{common.or}">or</span></div>
+            <a th:href="@{/books}" class="btn btn-secondary" th:text="#{index.button.browse}">Browse Books</a>
         </div>
     </div>
 
     <!-- CLIENT -->
     <div class="index-card" sec:authorize="hasRole('CLIENT')">
-        <h1 th:text="'Welcome back, ' + ${displayName} + '!'">Welcome back!</h1>
-        <span class="role-badge role-client">Client</span>
+        <h1 th:text="#{index.welcome(${displayName})}">Welcome back!</h1>
+        <span class="role-badge role-client" th:text="#{index.role.client}">Client</span>
 
         <div class="index-button-group">
-            <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
-            <a th:href="@{/orders/cart}" class="btn btn-secondary">My Cart</a>
-            <a th:href="@{/orders}" class="btn btn-secondary">My Orders</a>
+            <a th:href="@{/books}" class="btn btn-primary" th:text="#{index.button.browse}">Browse Books</a>
+            <a th:href="@{/orders/cart}" class="btn btn-secondary" th:text="#{index.button.cart}">My Cart</a>
+            <a th:href="@{/orders}" class="btn btn-secondary" th:text="#{index.button.orders}">My Orders</a>
             <form th:action="@{/logout}" method="post" style="width:100%; margin-top:10px;">
-                <button type="submit" class="btn btn-danger" style="width:100%;">Logout</button>
+                <button type="submit" class="btn btn-danger" style="width:100%;" th:text="#{index.button.logout}">Logout</button>
             </form>
         </div>
     </div>
 
     <!-- EMPLOYEE -->
     <div class="index-card" sec:authorize="hasRole('EMPLOYEE')">
-        <h1 th:text="'Welcome back, ' + ${displayName} + '!'">Welcome back!</h1>
-        <span class="role-badge role-employee">Employee</span>
+        <h1 th:text="#{index.welcome(${displayName})}">Welcome back!</h1>
+        <span class="role-badge role-employee" th:text="#{index.role.employee}">Employee</span>
 
         <div class="index-button-group">
-            <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
-            <a th:href="@{/books/manage/add}" class="btn btn-secondary">Add Book</a>
-            <a th:href="@{/orders/manage}" class="btn btn-secondary">Manage Orders</a>
+            <a th:href="@{/books}" class="btn btn-primary" th:text="#{index.button.browse}">Browse Books</a>
+            <a th:href="@{/books/manage/add}" class="btn btn-secondary" th:text="#{index.button.addBook}">Add Book</a>
+            <a th:href="@{/orders/manage}" class="btn btn-secondary" th:text="#{index.button.manageOrders}">Manage Orders</a>
             <form th:action="@{/logout}" method="post" style="width:100%; margin-top:10px;">
-                <button type="submit" class="btn btn-danger" style="width:100%;">Logout</button>
+                <button type="submit" class="btn btn-danger" style="width:100%;" th:text="#{index.button.logout}">Logout</button>
             </form>
         </div>
     </div>
 
     <!-- ADMIN -->
     <div class="index-card" sec:authorize="hasRole('ADMIN')">
-        <h1 th:text="'Welcome back, ' + ${displayName} + '!'">Welcome back!</h1>
-        <span class="role-badge role-admin">Admin</span>
-        <p class="subtitle">Quick access to administration tools</p>
+        <h1 th:text="#{index.welcome(${displayName})}">Welcome back!</h1>
+        <span class="role-badge role-admin" th:text="#{index.role.admin}">Admin</span>
+        <p class="subtitle" th:text="#{index.admin.subtitle}">Quick access to administration tools</p>
 
         <div class="index-button-group">
-            <a th:href="@{/books}" class="btn btn-primary">Browse Books</a>
-            <a th:href="@{/admin/dashboard}" class="btn btn-secondary">Dashboard</a>
-            <a th:href="@{/admin/employees}" class="btn btn-secondary">Manage Employees</a>
-            <a th:href="@{/admin/orders}" class="btn btn-secondary">View All Orders</a>
+            <a th:href="@{/books}" class="btn btn-primary" th:text="#{index.button.browse}">Browse Books</a>
+            <a th:href="@{/admin/dashboard}" class="btn btn-secondary" th:text="#{index.button.dashboard}">Dashboard</a>
+            <a th:href="@{/admin/employees}" class="btn btn-secondary" th:text="#{index.button.manageEmployees}">Manage Employees</a>
+            <a th:href="@{/admin/orders}" class="btn btn-secondary" th:text="#{index.button.viewAllOrders}">View All Orders</a>
 
             <form th:action="@{/logout}" method="post" style="width:100%; margin-top:10px;">
-                <button type="submit" class="btn btn-danger" style="width:100%;">Logout</button>
+                <button type="submit" class="btn btn-danger" style="width:100%;" th:text="#{index.button.logout}">Logout</button>
             </form>
         </div>
     </div>
