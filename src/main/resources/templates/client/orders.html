@@ -109,7 +109,9 @@
                             th:text="${item.book.name} + ' (' + ${item.quantity} + ')'"></li>
                     </ul>
                 </td>
-                <span th:text="${order.employeeEmail != null} ? ${order.employeeEmail} : #{orders.notAssigned}"></span>
+                <td>
+                    <span th:text="${order.employeeEmail != null} ? ${order.employeeEmail} : #{orders.notAssigned}"></span>
+                </td>
                 <td>
                     <form th:if="${order.orderStatus.name() == 'PLACED'}"
                           th:action="@{'/orders/cancel/' + ${order.id}}" method="post">

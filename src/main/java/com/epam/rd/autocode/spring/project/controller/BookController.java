@@ -113,7 +113,6 @@ public class BookController {
 
 
     @PostMapping("/{name}/restore")
-    @PreAuthorize("hasRole('EMPLOYEE')")
     public String restoreBook(@PathVariable String name) {
         bookService.restoreBook(name);
         return "redirect:/books";
