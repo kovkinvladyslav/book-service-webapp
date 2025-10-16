@@ -43,7 +43,7 @@
             <div class="meta-card">
                 <div class="meta-label" th:text="#{book.details.publicationDate}">Publication Date</div>
                 <div class="meta-value"
-                     th:text="${book.publicationDate != null ? #temporals.format(book.publicationDate, 'yyyy-MM-dd') : #{common.unknown}}">
+                <span th:text="${book.publicationDate != null ? #temporals.format(book.publicationDate, 'yyyy-MM-dd') : #messages.msg('common.unknown')}"></span>
                 </div>
             </div>
             <div class="meta-card" th:if="${book.pages}">

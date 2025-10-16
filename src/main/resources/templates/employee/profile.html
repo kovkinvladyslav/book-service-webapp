@@ -24,7 +24,7 @@
             </p>
             <p>
                 <strong th:text="#{employee.profile.phone} + ':'">Phone:</strong>
-                <span th:text="${employee.phone != null ? employee.phone : #{employee.profile.notAvailable}}"></span>
+                <span th:text="${employee.phone != null} ? ${employee.phone} : ${#messages.msg('employee.profile.notAvailable')}"></span>
             </p>
         </div>
 

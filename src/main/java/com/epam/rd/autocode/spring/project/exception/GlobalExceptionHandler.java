@@ -10,7 +10,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExistException.class)
     public String handleAlreadyExists(AlreadyExistException alreadyExistException, Model model) {
         model.addAttribute("errorMessage", alreadyExistException.getMessage());
-        return "redirect:/error/already-exists.html";
+        return "/error/already-exists.html";
     }
 
     @ExceptionHandler(NotFoundException.class)

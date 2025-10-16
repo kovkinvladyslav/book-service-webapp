@@ -22,27 +22,23 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register").anonymous()
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/login", "/register").anonymous()
+                        .requestMatchers("/books", "/books/**").permitAll()  // <- this includes /books/{name}
 
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         .requestMatchers("/books/manage/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers("/books/*/edit").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers("/books/*/delete").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers("/books/*/restore").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/books/*/edit", "/books/*/delete", "/books/*/restore")
+                        .hasAnyRole("EMPLOYEE", "ADMIN")
 
                         .requestMatchers("/employee/**").hasAnyRole("EMPLOYEE", "ADMIN")
-
-                        .requestMatchers("/books/**").permitAll()
-                        .requestMatchers("/books").permitAll()
-
                         .requestMatchers("/orders/**").hasAnyRole("CLIENT", "EMPLOYEE", "ADMIN")
-
                         .requestMatchers("/client/**").hasRole("CLIENT")
 
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/", true)

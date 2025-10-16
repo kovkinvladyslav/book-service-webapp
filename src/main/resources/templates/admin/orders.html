@@ -132,7 +132,7 @@
         <tr th:each="order : ${orders}">
             <td th:text="${order.id}"></td>
             <td th:text="${order.clientEmail}"></td>
-            <td th:text="${order.employeeEmail != null ? order.employeeEmail : #{admin.orders.notAssigned}}"></td>
+            <td th:text="${order.employeeEmail} ?: #{admin.orders.notAssigned}"></td>
             <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
             <td>
                 <ul class="book-list">

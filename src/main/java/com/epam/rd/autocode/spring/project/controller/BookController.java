@@ -112,10 +112,10 @@ public class BookController {
     }
 
 
-    @PostMapping("/books/{name}/restore")
+    @PostMapping("/{name}/restore")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public String restoreBook(@PathVariable String name) {
         bookService.restoreBook(name);
-        return "redirect:/books/manage";
+        return "redirect:/books";
     }
 }
